@@ -107,61 +107,61 @@ const LoginPage = () => {
 
 
     return (
-        <div className='min-h-screen w-full relative overflow-hidden'>
+        <div className='min-h-screen w-full relative overflow-y-auto lg:overflow-hidden'>
             {/* Full Screen Background Image */}
             <div 
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
+                className="fixed inset-0 bg-cover bg-center bg-no-repeat scale-105"
                 style={{ backgroundImage: `url(${Login})` }}
             />
             
             {/* Gradient Overlays for depth */}
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-900/70 via-black/50 to-indigo-900/70" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+            <div className="fixed inset-0 bg-gradient-to-br from-violet-900/70 via-black/50 to-indigo-900/70" />
+            <div className="fixed inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
             
             {/* Animated Floating Orbs */}
-            <div className="absolute top-20 left-20 w-72 h-72 bg-violet-500/20 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500" />
+            <div className="fixed top-20 left-20 w-72 h-72 bg-violet-500/20 rounded-full blur-3xl animate-pulse" />
+            <div className="fixed bottom-20 right-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="fixed top-1/2 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500" />
 
             {/* Content Container */}
-            <div className="relative z-10 min-h-screen flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 p-6">
+            <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 p-4 md:p-8">
                 
                 {/* Left Side - Logo & Branding */}
-                <div className="flex flex-col items-center md:items-start gap-6 animate-in fade-in slide-in-from-left duration-700">
+                <div className="flex flex-col items-center lg:items-start gap-4 lg:gap-6 animate-in fade-in slide-in-from-left duration-700 py-4 lg:py-0">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
                         <img 
                             src='image.png' 
                             alt="Logo" 
-                            className="relative w-40 md:w-56 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" 
+                            className="relative w-28 md:w-32 lg:w-56 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" 
                         />
                     </div>
-                    <div className="text-center md:text-left">
-                        <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+                    <div className="text-center lg:text-left hidden md:block">
+                        <h1 className="text-2xl lg:text-4xl font-black text-white tracking-tight">
                             Connect <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">Instantly</span>
                         </h1>
-                        <p className="text-white/50 mt-2 text-sm md:text-base max-w-xs">
+                        <p className="text-white/50 mt-2 text-sm lg:text-base max-w-xs">
                             Join millions of users sharing moments together
                         </p>
                     </div>
                 </div>
 
                 {/* Right Side - Glass Card Form */}
-                <div className="w-full max-w-md animate-in fade-in slide-in-from-right duration-700 delay-200">
+                <div className="w-full max-w-md animate-in fade-in slide-in-from-right duration-700 delay-200 pb-10 lg:pb-0">
                     <form 
                         onSubmit={onSubmitHandler}
-                        className='relative backdrop-blur-2xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl shadow-black/30'
+                        className='relative backdrop-blur-2xl bg-white/10 border border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/30'
                     >
                         {/* Glow effect behind card */}
                         <div className="absolute -inset-1 bg-gradient-to-r from-violet-600/20 via-transparent to-indigo-600/20 rounded-3xl blur-xl -z-10" />
                         
                         {/* Header */}
-                        <div className='flex justify-between items-center mb-8'>
+                        <div className='flex justify-between items-center mb-6 md:mb-8'>
                             <div>
-                                <h2 className='text-2xl md:text-3xl font-bold text-white'>
+                                <h2 className='text-xl md:text-3xl font-bold text-white'>
                                     {currState === "Sign up" ? "Create Account" : "Welcome Back"}
                                 </h2>
-                                <p className="text-white/40 text-sm mt-1">
+                                <p className="text-white/40 text-xs md:text-sm mt-1">
                                     {currState === "Sign up" 
                                         ? (isDataSubmitted ? "Almost there! Tell us about yourself" : "Fill in your details to get started")
                                         : "Sign in to continue chatting"
@@ -185,17 +185,16 @@ const LoginPage = () => {
                         <div className="space-y-4">
                             {currState === "Sign up" && !isDataSubmitted && (
                                 <div className="group">
-                                    <label className="block text-xs font-semibold text-white/60 mb-2 uppercase tracking-wider">Full Name</label>
+                                    <label className="block text-xs font-semibold text-white/60 mb-1 md:mb-2 uppercase tracking-wider">Full Name</label>
                                     <div className="relative">
                                         <input
                                             onChange={(e) => setFullName(e.target.value)}
                                             value={fullName}
                                             type="text"
-                                            className='w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
+                                            className='w-full p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
                                             placeholder="John Doe"
                                             required 
                                         />
-                                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-violet-500/0 via-violet-500/0 to-indigo-500/0 group-focus-within:from-violet-500/10 group-focus-within:to-indigo-500/10 pointer-events-none transition-all duration-300" />
                                     </div>
                                 </div>
                             )}
@@ -203,7 +202,7 @@ const LoginPage = () => {
                             {!isDataSubmitted && (
                                 <>
                                     <div className="group">
-                                        <label className="block text-xs font-semibold text-white/60 mb-2 uppercase tracking-wider">Email Address</label>
+                                        <label className="block text-xs font-semibold text-white/60 mb-1 md:mb-2 uppercase tracking-wider">Email Address</label>
                                         <div className="relative">
                                             <input
                                                 onChange={(e) => setEmail(e.target.value)}
@@ -211,13 +210,13 @@ const LoginPage = () => {
                                                 type="email"
                                                 placeholder='you@example.com'
                                                 required 
-                                                className='w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
+                                                className='w-full p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
                                             />
                                         </div>
                                     </div>
 
                                     <div className="group">
-                                        <label className="block text-xs font-semibold text-white/60 mb-2 uppercase tracking-wider">Password</label>
+                                        <label className="block text-xs font-semibold text-white/60 mb-1 md:mb-2 uppercase tracking-wider">Password</label>
                                         <div className="relative">
                                             <input
                                                 onChange={(e) => setPassword(e.target.value)}
@@ -225,7 +224,7 @@ const LoginPage = () => {
                                                 type="password"
                                                 placeholder='••••••••'
                                                 required 
-                                                className='w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
+                                                className='w-full p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
                                             />
                                         </div>
                                     </div>
@@ -251,7 +250,7 @@ const LoginPage = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full mt-6 py-4 relative overflow-hidden rounded-xl font-bold text-white transition-all duration-300 active:scale-[0.98] ${
+                            className={`w-full mt-6 py-3 md:py-4 relative overflow-hidden rounded-xl font-bold text-white transition-all duration-300 active:scale-[0.98] ${
                                 isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-violet-500/25'
                             }`}
                         >
@@ -280,7 +279,7 @@ const LoginPage = () => {
                         </button>
 
                         {/* Terms Checkbox */}
-                        <label className='flex items-center gap-3 mt-5 cursor-pointer group'>
+                        <label className='flex items-center gap-3 mt-4 md:mt-5 cursor-pointer group'>
                             <div className="relative">
                                 <input type="checkbox" required className="peer sr-only" />
                                 <div className="w-5 h-5 border-2 border-white/20 rounded-md peer-checked:bg-violet-500 peer-checked:border-violet-500 transition-all duration-200" />
@@ -288,15 +287,15 @@ const LoginPage = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <span className='text-sm text-white/50 group-hover:text-white/70 transition-colors'>
-                                I agree to the <span className="text-violet-400 hover:underline">Terms of Use</span> & <span className="text-violet-400 hover:underline">Privacy Policy</span>
+                            <span className='text-xs md:text-sm text-white/50 group-hover:text-white/70 transition-colors'>
+                                I agree to the <span className="text-violet-400 hover:underline">Terms</span> & <span className="text-violet-400 hover:underline">Privacy</span>
                             </span>
                         </label>
 
                         {/* Toggle Login/Signup */}
-                        <div className='mt-6 pt-6 border-t border-white/10 text-center'>
+                        <div className='mt-5 md:mt-6 pt-5 md:pt-6 border-t border-white/10 text-center'>
                             {currState === "Sign up" ? (
-                                <p className='text-sm text-white/50'>
+                                <p className='text-xs md:text-sm text-white/50'>
                                     Already have an account?{' '}
                                     <button 
                                         type="button"
@@ -307,7 +306,7 @@ const LoginPage = () => {
                                     </button>
                                 </p>
                             ) : (
-                                <p className='text-sm text-white/50'>
+                                <p className='text-xs md:text-sm text-white/50'>
                                     Don't have an account?{' '}
                                     <button 
                                         type="button"
