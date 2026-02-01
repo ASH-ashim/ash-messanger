@@ -70,7 +70,18 @@ export const VideoCallProvider = ({ children }) => {
         setShowVideoModal(true);
         startTimer();
 
-        const peer = new Peer({ initiator: false, trickle: false, stream });
+        const peer = new Peer({ 
+            initiator: false, 
+            trickle: false, 
+            stream,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' }
+                ]
+            }
+        });
 
         peer.on('signal', (data) => {
             console.log("VideoContext: Emitting answerCall signal to", call.from);
@@ -129,7 +140,18 @@ export const VideoCallProvider = ({ children }) => {
             console.error("VideoContext: Log error:", error);
         }
 
-        const peer = new Peer({ initiator: true, trickle: false, stream });
+        const peer = new Peer({ 
+            initiator: true, 
+            trickle: false, 
+            stream,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' }
+                ]
+            }
+        });
 
         peer.on('signal', (data) => {
             console.log("VideoContext: Initiator signaling...");

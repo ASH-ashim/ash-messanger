@@ -109,7 +109,10 @@ export const AuthProvider = ({ children }) => {
 
         const newSocket = io(backendUrl, {
             query: { userId: userData._id },
-            reconnection: true, 
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            transports: ["websocket", "polling"], // Try websocket first, then poll
         });
 
         newSocket.on("connect_error", (err) => {
