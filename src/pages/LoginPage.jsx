@@ -107,7 +107,7 @@ const LoginPage = () => {
 
 
     return (
-        <div className='min-h-screen w-full relative overflow-y-auto lg:overflow-hidden'>
+        <div className='min-h-[100dvh] w-full relative overflow-y-auto'>
             {/* Full Screen Background Image */}
             <div 
                 className="fixed inset-0 bg-cover bg-center bg-no-repeat scale-105"
@@ -124,33 +124,33 @@ const LoginPage = () => {
             <div className="fixed top-1/2 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500" />
 
             {/* Content Container */}
-            <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 p-4 md:p-8">
+            <div className="relative z-10 min-h-[100dvh] flex flex-col items-center justify-center gap-6 md:gap-8 lg:gap-16 p-4 md:p-8">
                 
                 {/* Left Side - Logo & Branding */}
-                <div className="flex flex-col items-center lg:items-start gap-4 lg:gap-6 animate-in fade-in slide-in-from-left duration-700 py-4 lg:py-0">
+                <div className="flex flex-col items-center gap-2 md:gap-4 lg:gap-6 animate-in fade-in slide-in-from-top lg:slide-in-from-left duration-700 py-2 md:py-4 lg:py-0">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
                         <img 
                             src='image.png' 
                             alt="Logo" 
-                            className="relative w-28 md:w-32 lg:w-56 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" 
+                            className="relative w-20 md:w-32 lg:w-56 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" 
                         />
                     </div>
-                    <div className="text-center lg:text-left hidden md:block">
-                        <h1 className="text-2xl lg:text-4xl font-black text-white tracking-tight">
+                    <div className="text-center hidden md:block">
+                        <h1 className="text-xl md:text-2xl lg:text-4xl font-black text-white tracking-tight">
                             Connect <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">Instantly</span>
                         </h1>
-                        <p className="text-white/50 mt-2 text-sm lg:text-base max-w-xs">
+                        <p className="text-white/50 mt-1 md:mt-2 text-xs md:text-sm lg:text-base max-w-xs">
                             Join millions of users sharing moments together
                         </p>
                     </div>
                 </div>
 
                 {/* Right Side - Glass Card Form */}
-                <div className="w-full max-w-md animate-in fade-in slide-in-from-right duration-700 delay-200 pb-10 lg:pb-0">
+                <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom lg:slide-in-from-right duration-700 delay-200 pb-10">
                     <form 
                         onSubmit={onSubmitHandler}
-                        className='relative backdrop-blur-2xl bg-white/10 border border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/30'
+                        className='relative backdrop-blur-2xl bg-white/10 border border-white/20 rounded-3xl p-5 md:p-8 shadow-2xl shadow-black/30'
                     >
                         {/* Glow effect behind card */}
                         <div className="absolute -inset-1 bg-gradient-to-r from-violet-600/20 via-transparent to-indigo-600/20 rounded-3xl blur-xl -z-10" />
