@@ -7,7 +7,7 @@ import { FaUser } from 'react-icons/fa';
 import Profile from "../../public/profile.jpg"
 
 const ProfilePage = () => {
-    const { authUser, updateProfile, token } = useContext(AuthContext);
+    const { authUser, updateProfile, token, subscribeToPush } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const [fullName, setFullName] = useState('');
@@ -15,6 +15,7 @@ const ProfilePage = () => {
     const [newProfilePic, setNewProfilePic] = useState(null);
     const [previewProfilePicUrl, setPreviewProfilePicUrl] = useState(null);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
 
     useEffect(() => {
         if (!token) {
@@ -36,6 +37,16 @@ const ProfilePage = () => {
         } else {
             setNewProfilePic(null);
             setPreviewProfilePicUrl(null);
+        }
+    };
+
+    const handleEnableNotifications = async () => {
+        const success = await subscribeToPush(true);
+        if (success) {
+            setNotificationPermission('granted');
+            toast.success("Notifications enabled!");
+        } else {
+            setNotificationPermission(Notification.permission);
         }
     };
 
@@ -223,6 +234,30 @@ const ProfilePage = () => {
                                     </div>
                                 </div>
 
+                                {/* Notification Settings */}
+                                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`p-2 rounded-lg ${notificationPermission === 'granted' ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/40'}`}>
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white">Push Notifications</p>
+                                            <p className="text-[10px] text-white/30 uppercase tracking-wider">{notificationPermission === 'granted' ? 'Enabled' : 'Disabled'}</p>
+                                        </div>
+                                    </div>
+                                    {notificationPermission !== 'granted' && (
+                                        <button 
+                                            type="button"
+                                            onClick={handleEnableNotifications}
+                                            className="px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold rounded-xl transition-all active:scale-95"
+                                        >
+                                            Enable
+                                        </button>
+                                    )}
+                                </div>
+
                                 {/* Action Buttons */}
                                 <div className="flex flex-col gap-3 pt-4">
                                     {/* Save Button */}
@@ -284,4 +319,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-

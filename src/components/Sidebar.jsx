@@ -17,7 +17,8 @@ const Sidebar = () => {
         selectedGroup, 
         setSelectedGroup, 
         unseenMessages, 
-        setUnseenMessages 
+        setUnseenMessages,
+        setRightSidebarOpen 
     } = useContext(ChatContext);
  
     const { logout, onlineUsers, authUser } = useContext(AuthContext); 
@@ -131,6 +132,7 @@ const Sidebar = () => {
                                             onClick={() => {
                                                 setSelectedGroup(group);
                                                 setSelectedUser(null);
+                                                setRightSidebarOpen(false);
                                             }}
                                             key={group._id}
                                             className={`flex items-center gap-3.5 p-3 rounded-2xl cursor-pointer transition-all duration-200 group ${selectedGroup?._id === group._id ? 'bg-violet-600 shadow-lg shadow-violet-600/20' : 'hover:bg-white/5'}`}
@@ -173,6 +175,7 @@ const Sidebar = () => {
                                             setSelectedUser(user);
                                             setSelectedGroup(null);
                                             setUnseenMessages(prev => ({ ...prev, [user._id]: 0 }));
+                                            setRightSidebarOpen(false);
                                         }}
                                         key={user._id}
                                         className={`flex items-center gap-3.5 p-3 rounded-2xl cursor-pointer transition-all duration-200 group ${selectedUser?._id === user._id ? 'bg-violet-600 shadow-lg shadow-violet-600/20' : 'hover:bg-white/5'}`}

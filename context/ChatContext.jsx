@@ -17,7 +17,7 @@ export const ChatProvider = ({ children }) => {
     const [selectedGroup, setSelectedGroup] = useState(null);
     const [unseenMessages, setUnseenMessages] = useState({});
     const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-    const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
+    const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
 
 
     const { socket, authUser } = useContext(AuthContext);

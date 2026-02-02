@@ -161,36 +161,47 @@ export const AuthProvider = ({ children }) => {
         return outputArray;
     }
 
-    // Subscribe to Push Notifications when user is authenticated
-    useEffect(() => {
-        if (authUser) {
-            const subscribeToPush = async () => {
-                if ('serviceWorker' in navigator && 'PushManager' in window) {
-                    try {
-                        const registration = await navigator.serviceWorker.register('/sw.js');
-                        
-                        const permission = await Notification.requestPermission();
-                        if (permission === 'granted') {
-                            // Verify if already subscribed
-                            let subscription = await registration.pushManager.getSubscription();
+    // Subscribe to Push Notifications function
+    const subscribeToPush = async (forceRequest = false) => {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
-                            if (!subscription) {
-                                const subscribeOptions = {
-                                    userVisibleOnly: true,
-                                    applicationServerKey: urlBase64ToUint8Array('BKi_XZtMnshP2CMhFA0gweMQgBbnbP1GQuHLv3EnwFf14I1xZH7-g_fVwdQtBCooRrP94PuglgUflNz3Zc1pHog')
-                                };
-                                subscription = await registration.pushManager.subscribe(subscribeOptions);
-                            }
-                            
-                            // Send to server
-                            await axios.post('/api/messages/subscribe', { subscription });
-                            console.log("Push notification subscribed");
-                        }
-                    } catch (err) {
-                        console.error("Push subscription failed:", err);
-                    }
+        try {
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            
+            let permission = Notification.permission;
+            
+            // If we're forcing a request or permission is default, ask the user
+            if (forceRequest || permission === 'default') {
+                // Return if this is not a user gesture and we're not forcing it
+                if (!forceRequest) return; 
+                permission = await Notification.requestPermission();
+            }
+
+            if (permission === 'granted') {
+                let subscription = await registration.pushManager.getSubscription();
+
+                if (!subscription) {
+                    const subscribeOptions = {
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array('BKi_XZtMnshP2CMhFA0gweMQgBbnbP1GQuHLv3EnwFf14I1xZH7-g_fVwdQtBCooRrP94PuglgUflNz3Zc1pHog')
+                    };
+                    subscription = await registration.pushManager.subscribe(subscribeOptions);
                 }
-            };
+                
+                await axios.post('/api/messages/subscribe', { subscription });
+                console.log("Push notification subscribed");
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.error("Push subscription failed:", err);
+            return false;
+        }
+    };
+
+    // Auto-subscribe only if permission is ALREADY granted
+    useEffect(() => {
+        if (authUser && Notification.permission === 'granted') {
             subscribeToPush();
         }
     }, [authUser]); 
@@ -208,6 +219,7 @@ export const AuthProvider = ({ children }) => {
                 logout,
                 updateProfile,
                 checkAuth,
+                subscribeToPush,
             }}
         >
             {children}
