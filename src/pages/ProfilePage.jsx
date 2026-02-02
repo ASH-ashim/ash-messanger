@@ -96,7 +96,7 @@ const ProfilePage = () => {
     const hasProfileImage = !!displayImageUrl;
 
     return (
-        <div className="min-h-screen w-full relative overflow-hidden">
+        <div className="min-h-[100dvh] w-full relative overflow-y-auto">
             {/* Full Screen Background Image */}
             <div 
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
@@ -117,7 +117,7 @@ const ProfilePage = () => {
             </div>
 
             {/* Content Container */}
-            <div className="relative z-10 min-h-screen flex items-center justify-center p-4 md:p-8">
+            <div className="relative z-10 min-h-[100dvh] flex items-center justify-center p-4 md:p-8 py-12 md:py-20">
                 <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
                     
                     {/* Main Glassmorphism Card */}
@@ -137,7 +137,7 @@ const ProfilePage = () => {
                         </button>
 
                         {/* Profile Image Section */}
-                        <div className="relative pt-16 flex flex-col items-center px-8 pb-8">
+                        <div className="relative pt-12 md:pt-16 flex flex-col items-center px-4 md:px-8 pb-8">
                             {/* Profile Picture with Ring */}
                             <label htmlFor="profilePicUpload" className="cursor-pointer group">
                                 <input
@@ -193,7 +193,7 @@ const ProfilePage = () => {
                             </div>
 
                             {/* Edit Form */}
-                            <form onSubmit={handleSubmit} className='w-full mt-8 space-y-5'>
+                            <form onSubmit={handleSubmit} className='w-full mt-6 md:mt-8 space-y-4 md:space-y-5'>
                                 {/* Full Name Field */}
                                 <div className="group">
                                     <label htmlFor="fullName" className='block text-xs font-semibold text-white/50 mb-2 uppercase tracking-wider'>Full Name</label>
@@ -309,7 +309,7 @@ const ProfilePage = () => {
                     </div>
 
                     {/* Footer Text */}
-                    <p className="text-center text-white/20 text-xs mt-6">
+                    <p className="text-center text-white/20 text-xs mt-6 pb-10 md:pb-0">
                         Your profile helps others recognize you
                     </p>
                 </div>
