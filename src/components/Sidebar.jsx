@@ -218,7 +218,7 @@ const Sidebar = () => {
                         ) : (
                             <div className="space-y-1">
                                 {callLogs.map((log) => {
-                                    const isCaller = log.caller._id === authUser._id;
+                                    const isCaller = log.caller?._id === authUser?._id;
                                     const otherUser = isCaller ? log.receiver : log.caller;
                                     return (
                                         <div key={log._id} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition-all group">

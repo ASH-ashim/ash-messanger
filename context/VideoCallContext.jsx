@@ -121,7 +121,7 @@ export const VideoCallProvider = ({ children }) => {
         setCall(prev => ({ ...prev, userToCall: id, isReceivingCall: false }));
 
         // If it's a group call, join the room immediately
-        if (isGroup) {
+        if (isGroup && authUser) {
             socket.emit("joinRoom", { roomId: id, userId: authUser._id });
         }
 
@@ -158,12 +158,12 @@ export const VideoCallProvider = ({ children }) => {
             console.log("VideoContext: Initiator signaling...");
             if (isGroup) {
                 groupMembers.forEach(memberId => {
-                    if (memberId !== authUser._id) {
+                    if (memberId !== authUser?._id) {
                         socket.emit('callUser', { 
                             userToCall: memberId, 
                             signalData: data, 
-                            from: authUser._id, 
-                            callerName: authUser.fullName,
+                            from: authUser?._id, 
+                            callerName: authUser?.fullName,
                             logId: logId,
                             groupName: groupName
                         });
@@ -230,7 +230,7 @@ export const VideoCallProvider = ({ children }) => {
             });
 
             peer.on('signal', (data) => {
-                socket.emit('sendingSignal', { userToSignal: userId, callerId: authUser._id, signal: data });
+                socket.emit('sendingSignal', { userToSignal: userId, callerId: authUser?._id, signal: data });
             });
 
             peer.on('stream', (incomingStream) => {
@@ -240,7 +240,7 @@ export const VideoCallProvider = ({ children }) => {
                 });
             });
         }
-    }, [getMediaStream, socket, authUser._id]);
+    }, [getMediaStream, socket, authUser?._id]);
 
     const handleReceivedSignal = useCallback(({ signal, id }) => {
         console.log("VideoContext: Received returned signal for group call participant");

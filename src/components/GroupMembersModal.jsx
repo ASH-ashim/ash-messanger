@@ -76,7 +76,7 @@ const GroupMembersModal = ({ onClose }) => {
                     </div>
                     
                     <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar space-y-3">
-                        {selectedGroup.members.map(member => (
+                        {selectedGroup.members.filter(m => m).map(member => (
                             <div key={member._id} className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/5 transition-colors group">
                                 <div className="flex items-center gap-4">
                                     <div className="relative">
@@ -87,7 +87,7 @@ const GroupMembersModal = ({ onClose }) => {
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-white group-hover:text-violet-400 transition-colors">
-                                            {member.fullName} {member._id === authUser._id && <span className="text-[10px] opacity-30 ml-1 text-white">(You)</span>}
+                                            {member.fullName} {member._id === authUser?._id && <span className="text-[10px] opacity-30 ml-1 text-white">(You)</span>}
                                         </p>
                                         <StatusBadge userId={member._id} />
                                     </div>

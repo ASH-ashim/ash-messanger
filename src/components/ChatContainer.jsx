@@ -85,7 +85,7 @@ const ChatContainer = () => {
 
     const startCall = () => {
         if (isGroupChat) {
-            const memberIds = chatInfo.members.map(m => m._id);
+            const memberIds = chatInfo.members.filter(m => m && m._id).map(m => m._id);
             callUser(chatInfo._id, true, memberIds, chatInfo.name);
         } else {
             callUser(chatInfo._id);

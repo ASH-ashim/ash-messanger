@@ -136,7 +136,7 @@ const VideoCall = ({ onClose, isGroupCall = false }) => {
 
                             {/* Group Peer Streams */}
                             {peers.map((peerObj) => {
-                                const member = selectedGroup?.members?.find(m => m._id === peerObj.peerID);
+                                const member = selectedGroup?.members?.find(m => m?._id === peerObj.peerID);
                                 return (
                                     <div key={peerObj.peerID} className="relative w-full h-full rounded-xl overflow-hidden bg-black/40 min-h-[150px]">
                                         <video
