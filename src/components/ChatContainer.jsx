@@ -107,16 +107,16 @@ const ChatContainer = () => {
     }
 
     return (
-        <div className="h-full overflow-hidden relative bg-[#1e1e2e]/50 backdrop-blur-3xl flex flex-col border-l border-white/5 animate-in fade-in slide-in-from-right-4 duration-300"> 
+        <div className="h-full min-h-0 overflow-hidden relative bg-[#1e1e2e]/50 backdrop-blur-3xl flex flex-col border-l border-white/5 animate-in fade-in slide-in-from-right-4 duration-300"> 
             {/* Header */}
-            <div className="flex items-center gap-4 px-4 py-3 border-b border-white/5 bg-black/20 backdrop-blur-md">
+            <div className="flex items-center gap-2 md:gap-4 px-3 md:px-4 py-2 md:py-3 border-b border-white/5 bg-black/20 backdrop-blur-md flex-shrink-0">
                 {/* Back Button */}
                 <button 
                     onClick={handleBack} 
-                    className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition-all active:scale-95"
+                    className="p-2 md:p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition-all active:scale-95 flex-shrink-0"
                     title="Back to contacts"
                 >
-                    <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
@@ -135,7 +135,7 @@ const ChatContainer = () => {
                 >
                     <div className="relative flex-shrink-0">
                         {isGroupChat && !chatInfo.groupPic ? (
-                            <div className="w-10 h-10 rounded-xl overflow-hidden grid grid-cols-2 border border-white/10 shadow-lg">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl overflow-hidden grid grid-cols-2 border border-white/10 shadow-lg">
                                 {chatInfo.members.slice(0, 4).map(m => (
                                     <img key={m._id} src={m.profilePic || assets.avatar_icon} className="w-full h-full object-cover" alt="" />
                                 ))}
@@ -144,11 +144,11 @@ const ChatContainer = () => {
                             <img 
                                 src={isGroupChat ? chatInfo.groupPic || "/group.png" : chatInfo.profilePic || assets.avatar_icon} 
                                 alt="Profile" 
-                                className="w-10 h-10 rounded-xl object-cover border border-white/10 shadow-lg" 
+                                className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-white/10 shadow-lg" 
                             />
                         )}
                         {!isGroupChat && onlineUsers.includes(chatInfo._id) && (
-                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1e1e2e]" />
+                            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 md:w-3 md:h-3 bg-green-500 rounded-full border-2 border-[#1e1e2e]" />
                         )}
                     </div>
     
@@ -180,10 +180,10 @@ const ChatContainer = () => {
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={startCall} 
-                        className="p-2.5 bg-violet-500/10 hover:bg-violet-500 text-violet-400 hover:text-white rounded-xl transition-all active:scale-95" 
+                        className="p-2 md:p-2.5 bg-violet-500/10 hover:bg-violet-500 text-violet-400 hover:text-white rounded-xl transition-all active:scale-95 flex-shrink-0" 
                         title="Start Video Call"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
                     </button>
@@ -193,7 +193,7 @@ const ChatContainer = () => {
             {showMembersModal && <GroupMembersModal onClose={() => setShowMembersModal(false)} />}
 
             {/* Chat Area */}
-            <div className="flex-grow overflow-y-auto p-4 space-y-4 custom-scrollbar">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                 {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-white/20">
                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
@@ -267,19 +267,19 @@ const ChatContainer = () => {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-black/20 backdrop-blur-xl border-t border-white/5">
-                <div className="flex items-center gap-2 bg-white/5 p-2 rounded-2xl border border-white/5 focus-within:border-violet-500/50 transition-all">
+            <div className="p-2 md:p-4 bg-black/20 backdrop-blur-xl border-t border-white/5">
+                <div className="flex items-center gap-1 md:gap-2 bg-white/5 p-1.5 md:p-2 rounded-2xl border border-white/5 focus-within:border-violet-500/50 transition-all">
                     <input 
                         type="file" id='image' 
                         onChange={handleSendImage}
                         accept='image/*' hidden 
                     />
-                    <label htmlFor="image" className="p-2 hover:bg-white/10 rounded-xl cursor-pointer transition text-white/40 hover:text-white">
+                    <label htmlFor="image" className="p-1.5 md:p-2 hover:bg-white/10 rounded-xl cursor-pointer transition text-white/40 hover:text-white flex-shrink-0">
                         <img src={assets.gallery_icon} className="w-5" alt="Gallery" />
                     </label>
                     <button 
                         onClick={() => setShowVoiceRecorder(true)}
-                        className="p-2 hover:bg-white/10 rounded-xl transition text-white/40 hover:text-white"
+                        className="p-1.5 md:p-2 hover:bg-white/10 rounded-xl transition text-white/40 hover:text-white flex-shrink-0"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                     </button>
@@ -294,10 +294,10 @@ const ChatContainer = () => {
                     
                     <button 
                         onClick={handleSendMessage}
-                        className="p-3 bg-violet-500 hover:bg-violet-600 text-white rounded-xl shadow-lg shadow-violet-500/30 transition-all active:scale-95 disabled:opacity-50"
+                        className="p-2.5 md:p-3 bg-violet-500 hover:bg-violet-600 text-white rounded-xl shadow-lg shadow-violet-500/30 transition-all active:scale-95 disabled:opacity-50 flex-shrink-0"
                         disabled={!input.trim()}
                     >
-                        <img src={assets.send_button} className="w-5" alt="Send" />
+                        <img src={assets.send_button} className="w-4 md:w-5" alt="Send" />
                     </button>
                 </div>
             </div>

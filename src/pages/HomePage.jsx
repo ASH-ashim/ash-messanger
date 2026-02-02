@@ -9,8 +9,8 @@ const HomePage = () => {
     const hasChatSelected = !!(selectedUser || selectedGroup);
 
     return (
-        <div className='w-full h-screen md:p-6 lg:p-10 bg-[#0f0f1a]'>
-            <div className='w-full h-full backdrop-blur-3xl border border-white/10 rounded-3xl overflow-hidden flex relative shadow-2xl'>
+        <div className='w-full h-[100dvh] md:p-6 lg:p-10 bg-[#0f0f1a]'>
+            <div className='w-full h-full backdrop-blur-3xl border border-white/10 md:rounded-3xl overflow-hidden flex relative shadow-2xl'>
                 {/* Left Sidebar - Shows when no chat selected */}
                 <div 
                     className={`min-h-0 h-full transition-all duration-500 ease-in-out overflow-hidden flex-shrink-0
