@@ -21,6 +21,7 @@ export const VideoCallProvider = ({ children }) => {
     const [callDuration, setCallDuration] = useState(0);
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [isGroupCall, setIsGroupCall] = useState(false);
+    const [peers, setPeers] = useState([]); // For group calls
 
     const peerRef = useRef();
     const timerRef = useRef();
@@ -191,6 +192,79 @@ export const VideoCallProvider = ({ children }) => {
         peerRef.current = peer;
     }, [authUser, socket, getMediaStream]);
 
+    const handleUserJoined = useCallback(async ({ userId, signal }) => {
+        console.log("VideoContext: User joined room:", userId);
+        const stream = await getMediaStream();
+        if (!stream) return;
+
+        // If we receive a signal, it means someone is trying to connect to us
+        if (signal) {
+            console.log("VideoContext: Received signal from joining user", userId);
+            const peer = new Peer({
+                initiator: false,
+                trickle: false,
+                stream,
+                config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
+            });
+
+            peer.on('signal', (data) => {
+                socket.emit('returningSignal', { signal: data, callerId: userId });
+            });
+
+            peer.on('stream', (incomingStream) => {
+                setPeers(prev => {
+                    if (prev.find(p => p.peerID === userId)) return prev;
+                    return [...prev, { peerID: userId, stream: incomingStream, peer }];
+                });
+            });
+
+            peer.signal(signal);
+        } else {
+            // If no signal, we are the ones who were already in the room, so we initiate connection to the new user
+            console.log("VideoContext: Initiating connection to new user", userId);
+            const peer = new Peer({
+                initiator: true,
+                trickle: false,
+                stream,
+                config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
+            });
+
+            peer.on('signal', (data) => {
+                socket.emit('sendingSignal', { userToSignal: userId, callerId: authUser._id, signal: data });
+            });
+
+            peer.on('stream', (incomingStream) => {
+                setPeers(prev => {
+                    if (prev.find(p => p.peerID === userId)) return prev;
+                    return [...prev, { peerID: userId, stream: incomingStream, peer }];
+                });
+            });
+        }
+    }, [getMediaStream, socket, authUser._id]);
+
+    const handleReceivedSignal = useCallback(({ signal, id }) => {
+        console.log("VideoContext: Received returned signal for group call participant");
+        // We need to find the specific peer for this id
+        setPeers(prev => {
+            const peerObj = prev.find(p => p.peerID === id); // Note: server sends socket.id usually, but here we use userId or socket.id depending on implementation
+            if (peerObj && peerObj.peer) {
+                peerObj.peer.signal(signal);
+            }
+            return prev;
+        });
+    }, []);
+
+    const handleUserLeft = useCallback(({ userId }) => {
+        console.log("VideoContext: User left group call:", userId);
+        setPeers(prev => {
+            const peerObj = prev.find(p => p.peerID === userId);
+            if (peerObj && peerObj.peer) {
+                peerObj.peer.destroy();
+            }
+            return prev.filter(p => p.peerID !== userId);
+        });
+    }, []);
+
     const endCall = useCallback(async (notifyPeer = true) => {
         console.log("VideoContext: Cleaning up call...");
         stopTimer();
@@ -221,6 +295,12 @@ export const VideoCallProvider = ({ children }) => {
             peerRef.current.destroy();
             peerRef.current = null;
         }
+
+        // Clean up group peers
+        peers.forEach(p => {
+            if (p.peer) p.peer.destroy();
+        });
+        setPeers([]);
 
         if (localStream) {
             localStream.getTracks().forEach(track => {
@@ -274,13 +354,21 @@ export const VideoCallProvider = ({ children }) => {
         socket.on('incomingCall', handleIncomingCall);
         socket.on('callAccepted', handleCallAccepted);
         socket.on('callEnded', handleCallEnded);
+        socket.on('userJoinedRoom', handleUserJoined);
+        socket.on('receivingSignalFromJoiningUser', handleUserJoined);
+        socket.on('receivingReturnedSignal', handleReceivedSignal);
+        socket.on('userLeft', handleUserLeft);
 
         return () => {
             socket.off('incomingCall', handleIncomingCall);
             socket.off('callAccepted', handleCallAccepted);
             socket.off('callEnded', handleCallEnded);
+            socket.off('userJoinedRoom', handleUserJoined);
+            socket.off('receivingSignalFromJoiningUser', handleUserJoined);
+            socket.off('receivingReturnedSignal', handleReceivedSignal);
+            socket.off('userLeft', handleUserLeft);
         };
-    }, [socket, endCall]);
+    }, [socket, endCall, handleUserJoined, handleReceivedSignal, handleUserLeft]);
 
     return (
         <VideoCallContext.Provider value={{

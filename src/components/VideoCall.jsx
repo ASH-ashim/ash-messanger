@@ -14,6 +14,7 @@ const VideoCall = ({ onClose, isGroupCall = false }) => {
         callDuration, 
         endCall, 
         call, 
+        peers,
     } = useContext(VideoCallContext);
     
     const { selectedUser, selectedGroup } = useContext(ChatContext);
@@ -22,6 +23,7 @@ const VideoCall = ({ onClose, isGroupCall = false }) => {
     // Local refs for reliable stream assignment
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
+    const peersRef = useRef({}); 
 
     // Toggle states for mic and video
     const [isMicOn, setIsMicOn] = useState(true);
@@ -75,6 +77,16 @@ const VideoCall = ({ onClose, isGroupCall = false }) => {
         }
     }, [remoteStream]);
 
+    // Handle multiple peers for group calls
+    useEffect(() => {
+        peers.forEach(peerObj => {
+            const videoElement = peersRef.current[peerObj.peerID];
+            if (videoElement && peerObj.stream) {
+                videoElement.srcObject = peerObj.stream;
+            }
+        });
+    }, [peers]); 
+
     // Initialize toggle states based on stream
     useEffect(() => {
         if (localStream) {
@@ -104,44 +116,61 @@ const VideoCall = ({ onClose, isGroupCall = false }) => {
             <div className="flex-1 p-2 md:p-4 lg:p-6 overflow-hidden">
                 <div className="w-full h-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-2 md:gap-4">
                     
-                    {/* Remote Video (Other Person) - Takes most space */}
                     <div className="flex-1 relative rounded-2xl md:rounded-3xl overflow-hidden bg-gradient-to-br from-[#1a1a2e] to-[#0f0f1a] border border-white/10 shadow-2xl min-h-[200px]">
-                        {callAccepted && remoteStream ? (
-                            <video
-                                ref={remoteVideoRef}
-                                autoPlay
-                                playsInline
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            /* Waiting State with Profile Picture */
-                            <div className="w-full h-full flex flex-col items-center justify-center gap-4 md:gap-6 p-4">
-                                {/* Animated rings */}
-                                <div className="relative">
-                                    <div className="absolute inset-0 scale-150 rounded-full border-2 border-violet-500/20 animate-ping" />
-                                    <div className="absolute inset-0 scale-125 rounded-full border-2 border-violet-500/30 animate-pulse" />
-                                    <img 
-                                        src={remoteProfilePic} 
-                                        className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full object-cover border-4 border-violet-500/50 relative z-10 shadow-2xl" 
-                                        alt={displayName} 
+                        <div className={`w-full h-full grid ${(!remoteStream && peers.length === 0) ? 'grid-cols-1' : (peers.length > 1 ? 'grid-cols-2 lg:grid-cols-3' : 'grid-cols-1')} gap-2 p-2`}>
+                            {/* Main Remote Stream */}
+                            {(callAccepted && remoteStream) && (
+                                <div className="relative w-full h-full rounded-xl overflow-hidden bg-black/40">
+                                    <video
+                                        ref={remoteVideoRef}
+                                        autoPlay
+                                        playsInline
+                                        className="w-full h-full object-cover"
                                     />
+                                    <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-xl text-white text-[10px] font-semibold border border-white/10 flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                        {displayName}
+                                    </div>
                                 </div>
-                                <div className="text-center">
-                                    <h3 className="text-white text-xl md:text-2xl font-bold">{displayName}</h3>
-                                    <p className="text-white/40 text-sm md:text-base mt-1 animate-pulse">
-                                        {callAccepted ? 'Connected' : 'Waiting to connect...'}
-                                    </p>
+                            )}
+
+                            {/* Group Peer Streams */}
+                            {peers.map((peerObj) => {
+                                const member = selectedGroup?.members?.find(m => m._id === peerObj.peerID);
+                                return (
+                                    <div key={peerObj.peerID} className="relative w-full h-full rounded-xl overflow-hidden bg-black/40 min-h-[150px]">
+                                        <video
+                                            ref={el => peersRef.current[peerObj.peerID] = el}
+                                            autoPlay
+                                            playsInline
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-xl text-white text-[10px] font-semibold border border-white/10 flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                            {member?.fullName || "Participant"}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+                            {/* Waiting State */}
+                            {!remoteStream && peers.length === 0 && (
+                                <div className="w-full h-full flex flex-col items-center justify-center gap-4 md:gap-6 p-4">
+                                    <div className="relative">
+                                        <div className="absolute inset-0 scale-150 rounded-full border-2 border-violet-500/20 animate-ping" />
+                                        <img 
+                                            src={remoteProfilePic} 
+                                            className="w-24 h-24 md:w-32 rounded-full object-cover border-4 border-violet-500/50 relative z-10 shadow-2xl" 
+                                            alt={displayName} 
+                                        />
+                                    </div>
+                                    <div className="text-center">
+                                        <h3 className="text-white text-xl font-bold">{displayName}</h3>
+                                        <p className="text-white/40 text-sm mt-1 animate-pulse">Waiting to connect...</p>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                        
-                        {/* Remote user name badge */}
-                        {callAccepted && (
-                            <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 bg-black/50 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-white text-xs md:text-sm font-semibold border border-white/10 flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500" />
-                                {displayName}
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
 
                     {/* Local Video (Self) - Picture in Picture */}
