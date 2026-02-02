@@ -385,6 +385,7 @@ export const VideoCallProvider = ({ children }) => {
             answerCall,
             rejectCall,
             authUser,
+            peers,
         }}>
             {children}
             {call.isReceivingCall && !callAccepted && (
