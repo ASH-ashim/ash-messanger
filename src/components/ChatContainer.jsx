@@ -153,7 +153,7 @@ const ChatContainer = () => {
                     </div>
     
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-white text-base font-bold truncate">{chatInfo.name || chatInfo.fullName}</h3>
+                        <h3 className="text-white text-base 2xl:text-lg font-bold truncate">{chatInfo.name || chatInfo.fullName}</h3>
                         <div className="flex items-center gap-1.5">
                             {isGroupChat ? (
                                 <p className="text-[10px] text-white/40 font-medium">
@@ -245,7 +245,7 @@ const ChatContainer = () => {
                                         </button>
                                     )}
 
-                                    <div className={`p-4 rounded-2xl shadow-sm text-sm ${isMine ? 'bg-violet-600 text-white rounded-br-none' : 'bg-[#282a36] text-white/90 border border-white/5 rounded-bl-none'}`}>
+                                    <div className={`p-4 rounded-2xl shadow-sm text-sm 2xl:text-base ${isMine ? 'bg-violet-600 text-white rounded-br-none' : 'bg-[#282a36] text-white/90 border border-white/5 rounded-bl-none'}`}>
                                         {msg.image && <img src={msg.image} className="max-w-full rounded-lg mb-2" alt="attachment" />}
                                         {msg.audio && (
                                             <div className="flex items-center gap-3">
@@ -267,8 +267,8 @@ const ChatContainer = () => {
             </div>
 
             {/* Input Area */}
-            <div className="p-2 md:p-4 bg-black/20 backdrop-blur-xl border-t border-white/5">
-                <div className="flex items-center gap-1 md:gap-2 bg-white/5 p-1.5 md:p-2 rounded-2xl border border-white/5 focus-within:border-violet-500/50 transition-all">
+            <div className="p-2 md:p-4 2xl:p-6 bg-black/20 backdrop-blur-xl border-t border-white/5">
+                <div className="flex items-center gap-1 md:gap-2 bg-white/5 p-1.5 md:p-2 2xl:p-4 rounded-2xl border border-white/5 focus-within:border-violet-500/50 transition-all">
                     <input 
                         type="file" id='image' 
                         onChange={handleSendImage}
@@ -289,7 +289,7 @@ const ChatContainer = () => {
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                         placeholder="Type a message..."
-                        className="flex-1 bg-transparent border-none outline-none text-white text-sm px-2 placeholder-white/20"
+                        className="flex-1 bg-transparent border-none outline-none text-white text-sm 2xl:text-lg px-2 placeholder-white/20"
                     />
                     
                     <button 
@@ -297,7 +297,7 @@ const ChatContainer = () => {
                         className="p-2.5 md:p-3 bg-violet-500 hover:bg-violet-600 text-white rounded-xl shadow-lg shadow-violet-500/30 transition-all active:scale-95 disabled:opacity-50 flex-shrink-0"
                         disabled={!input.trim()}
                     >
-                        <img src={assets.send_button} className="w-4 md:w-5" alt="Send" />
+                        <img src={assets.send_button} className="w-4 md:w-5 2xl:w-6" alt="Send" />
                     </button>
                 </div>
             </div>

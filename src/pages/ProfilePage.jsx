@@ -117,8 +117,8 @@ const ProfilePage = () => {
             </div>
 
             {/* Content Container */}
-            <div className="relative z-10 min-h-[100dvh] flex items-center justify-center p-4 md:p-8 py-12 md:py-20">
-                <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="relative z-10 min-h-[100dvh] flex items-center justify-center p-4 md:p-8 py-12 md:py-20 2xl:py-32">
+                <div className="w-full max-w-lg 2xl:max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-700">
                     
                     {/* Main Glassmorphism Card */}
                     <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl overflow-hidden shadow-2xl shadow-black/50">
@@ -152,7 +152,7 @@ const ProfilePage = () => {
                                     <div className="absolute -inset-1 bg-white/20 rounded-full" />
                                     
                                     {/* Image Container */}
-                                    <div className='relative w-32 h-32 rounded-full overflow-hidden border-2 border-white/30 bg-[#1e1e2e] flex items-center justify-center'>
+                                    <div className='relative w-32 h-32 2xl:w-48 2xl:h-48 rounded-full overflow-hidden border-2 border-white/30 bg-[#1e1e2e] flex items-center justify-center'>
                                         {hasProfileImage ? (
                                             <img
                                                 src={displayImageUrl}
@@ -183,7 +183,7 @@ const ProfilePage = () => {
 
                             {/* User Info */}
                             <div className="mt-5 text-center">
-                                <h1 className="text-2xl font-bold text-white">{authUser.fullName}</h1>
+                                <h1 className="text-2xl 2xl:text-4xl font-bold text-white">{authUser.fullName}</h1>
                                 <p className="text-white/50 text-sm mt-1 flex items-center justify-center gap-2">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -207,7 +207,7 @@ const ProfilePage = () => {
                                             id="fullName"
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
-                                            className='w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
+                                            className='w-full pl-12 pr-4 py-4 2xl:py-6 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300 2xl:text-xl'
                                             placeholder="Enter your name"
                                             required
                                         />
@@ -228,7 +228,7 @@ const ProfilePage = () => {
                                             value={bio}
                                             onChange={(e) => setBio(e.target.value)}
                                             rows={3}
-                                            className='w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300 resize-none'
+                                            className='w-full pl-12 pr-4 py-4 2xl:py-6 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300 resize-none 2xl:text-xl'
                                             placeholder="Tell us about yourself..."
                                         />
                                     </div>

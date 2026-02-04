@@ -42,24 +42,24 @@ const RightSidebar = () => {
                     <img 
                         src={(selectedGroup ? selectedGroup.groupPic : selectedUser?.profilePic) || "/avatar.png"} 
                         alt=""
-                        className='w-24 h-24 rounded-full object-cover border-2 border-violet-500/50 shadow-xl' 
+                        className='w-24 h-24 2xl:w-32 2xl:h-32 rounded-full object-cover border-2 border-violet-500/50 shadow-xl' 
                     />
                     {!selectedGroup && selectedUser && onlineUsers.includes(selectedUser._id) && (
                         <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#1e1e2e]" />
                     )}
                 </div>
                 
-                <h2 className='text-white text-xl font-bold mb-1 truncate w-full'>
+                <h2 className='text-white text-xl 2xl:text-2xl font-bold mb-1 truncate w-full'>
                     {selectedGroup ? selectedGroup.name : selectedUser?.fullName}
                 </h2>
-                <p className="text-white/40 text-xs px-4 leading-relaxed line-clamp-3">
+                <p className="text-white/40 text-xs 2xl:text-sm px-4 leading-relaxed line-clamp-3">
                     {selectedGroup ? selectedGroup.description : selectedUser?.bio || "No bio available"}
                 </p>
                 
                 {selectedGroup && (
                     <div className="mt-4 flex flex-wrap justify-center gap-1">
                         {selectedGroup.members.slice(0, 5).map(m => (
-                            <img key={m._id} src={m.profilePic || "/avatar.png"} className="w-6 h-6 rounded-full border border-white/10" title={m.fullName} />
+                            <img key={m._id} src={m.profilePic || "/avatar.png"} className="w-6 h-6 2xl:w-8 2xl:h-8 rounded-full border border-white/10" title={m.fullName} />
                         ))}
                         {selectedGroup.members.length > 5 && (
                             <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-[10px] text-white/40">
@@ -111,7 +111,7 @@ const RightSidebar = () => {
             <div className="absolute bottom-6 left-6 right-6">
                 <button 
                     onClick={() => logout()}
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-bold text-xs rounded-xl transition-all duration-300 group"
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-bold text-xs 2xl:text-base rounded-xl transition-all duration-300 group"
                 >
                     <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

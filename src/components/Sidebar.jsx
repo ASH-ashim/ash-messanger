@@ -68,7 +68,7 @@ const Sidebar = () => {
     };
 
     return (
-        <div className={`bg-[#1e1e2e]/95 h-full max-h-screen flex flex-col border-r border-white/5 backdrop-blur-3xl text-white transition-all duration-300 overflow-hidden ${selectedUser || selectedGroup ? "max-md:hidden" : "w-full md:w-[320px] lg:w-[350px]"}`}>
+        <div className={`bg-[#1e1e2e]/95 h-full max-h-screen flex flex-col border-r border-white/5 backdrop-blur-3xl text-white transition-all duration-300 overflow-hidden ${selectedUser || selectedGroup ? "max-md:hidden" : "w-full md:w-[320px] lg:w-[350px] 2xl:w-[450px]"}`}>
             {/* Header */}
             <div className="p-6 space-y-6">
                 <div className="flex justify-between items-center">
@@ -93,7 +93,7 @@ const Sidebar = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         type="text" 
                         value={searchTerm}
-                        className="w-full bg-white/5 border border-white/5 rounded-2xl py-3.5 pl-11 pr-4 outline-none focus:border-violet-500/50 focus:bg-white/10 transition-all text-sm placeholder-white/20" 
+                        className="w-full bg-white/5 border border-white/5 rounded-2xl py-3.5 2xl:py-5 pl-11 2xl:pl-14 pr-4 outline-none focus:border-violet-500/50 focus:bg-white/10 transition-all text-sm 2xl:text-lg placeholder-white/20" 
                         placeholder='Search chats or calls...'
                     />
                 </div>
@@ -125,7 +125,7 @@ const Sidebar = () => {
                         {/* Groups Section */}
                         {filteredGroups.length > 0 && (
                             <div className="mb-8">
-                                <h4 className="px-3 mb-3 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Groups</h4>
+                                <h4 className="px-3 mb-3 text-[10px] 2xl:text-xs font-black text-white/30 uppercase tracking-[0.2em]">Groups</h4>
                                 <div className="space-y-1">
                                     {filteredGroups.map((group) => (
                                         <div
@@ -153,9 +153,9 @@ const Sidebar = () => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-baseline mb-0.5">
-                                                    <p className={`font-bold truncate text-sm ${selectedGroup?._id === group._id ? 'text-white' : 'text-white/90'}`}>{group.name}</p>
+                                                    <p className={`font-bold truncate text-sm 2xl:text-lg ${selectedGroup?._id === group._id ? 'text-white' : 'text-white/90'}`}>{group.name}</p>
                                                 </div>
-                                                <p className={`text-[11px] truncate ${selectedGroup?._id === group._id ? 'text-white/60' : 'text-white/30'}`}>
+                                                <p className={`text-[11px] 2xl:text-sm truncate ${selectedGroup?._id === group._id ? 'text-white/60' : 'text-white/30'}`}>
                                                     {group.members.length} participants
                                                 </p>
                                             </div>
@@ -188,9 +188,9 @@ const Sidebar = () => {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-baseline mb-0.5">
-                                                <p className={`font-bold truncate text-sm ${selectedUser?._id === user._id ? 'text-white' : 'text-white/90'}`}>{user.fullName}</p>
+                                                <p className={`font-bold truncate text-sm 2xl:text-lg ${selectedUser?._id === user._id ? 'text-white' : 'text-white/90'}`}>{user.fullName}</p>
                                             </div>
-                                            <span className={`text-[11px] font-medium ${onlineUsers.includes(user._id) ? (selectedUser?._id === user._id ? 'text-white/70' : 'text-green-500') : 'text-white/20'}`}>
+                                            <span className={`text-[11px] 2xl:text-sm font-medium ${onlineUsers.includes(user._id) ? (selectedUser?._id === user._id ? 'text-white/70' : 'text-green-500') : 'text-white/20'}`}>
                                                 {onlineUsers.includes(user._id) ? 'Online' : 'Offline'}
                                             </span>
                                         </div>

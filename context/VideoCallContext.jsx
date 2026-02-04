@@ -21,30 +21,33 @@ export const VideoCallProvider = ({ children }) => {
     const [callDuration, setCallDuration] = useState(0);
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [isGroupCall, setIsGroupCall] = useState(false);
-    const [peers, setPeers] = useState([]); // For group calls
+    const [peers, setPeers] = useState([]); // For group UI
+    const groupPeersRef = useRef([]); // [{ peerID, peer }]
 
-    const peerRef = useRef();
+    const peerRef = useRef(); // For one-to-one
     const timerRef = useRef();
 
-    const mediaRequestPending = useRef(false);
+    const mediaStreamPromise = useRef(null);
 
     const getMediaStream = useCallback(async () => {
         if (localStream) return localStream;
-        if (mediaRequestPending.current) return null;
+        if (mediaStreamPromise.current) return mediaStreamPromise.current;
         
-        mediaRequestPending.current = true;
-        try {
-            console.log("VideoContext: Requesting camera/mic...");
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            setLocalStream(stream);
-            mediaRequestPending.current = false;
-            return stream;
-        } catch (error) {
-            console.error("VideoContext: Device access error:", error);
-            mediaRequestPending.current = false;
-            toast.error("Could not access camera or microphone.");
-            return null;
-        }
+        mediaStreamPromise.current = (async () => {
+            try {
+                console.log("VideoContext: Requesting camera/mic...");
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                setLocalStream(stream);
+                return stream;
+            } catch (error) {
+                console.error("VideoContext: Device access error:", error);
+                toast.error("Could not access camera or microphone.");
+                mediaStreamPromise.current = null;
+                return null;
+            }
+        })();
+        
+        return mediaStreamPromise.current;
     }, [localStream]);
 
     const startTimer = () => {
@@ -70,6 +73,13 @@ export const VideoCallProvider = ({ children }) => {
         setCallAccepted(true);
         setShowVideoModal(true);
         startTimer();
+
+        if (call.groupName) {
+            console.log("VideoContext: Answering group call for room:", call.groupId);
+            setIsGroupCall(true);
+            socket.emit("joinRoom", { roomId: call.groupId, userId: authUser._id });
+            return;
+        }
 
         const peer = new Peer({ 
             initiator: false, 
@@ -107,7 +117,7 @@ export const VideoCallProvider = ({ children }) => {
             setCallLogId(call.logId);
             axios.put(`/api/messages/calls/update/${call.logId}`, { status: "ongoing" }).catch(e => console.error(e));
         }
-    }, [call, socket, getMediaStream]);
+    }, [call, socket, authUser?._id, getMediaStream]);
 
     const callUser = useCallback(async (id, isGroup = false, groupMembers = [], groupName = "") => {
         if (mediaRequestPending.current) return;
@@ -119,11 +129,6 @@ export const VideoCallProvider = ({ children }) => {
         setShowVideoModal(true);
         // Store call info so we know who to disconnect from if we hang up early
         setCall(prev => ({ ...prev, userToCall: id, isReceivingCall: false }));
-
-        // If it's a group call, join the room immediately
-        if (isGroup && authUser) {
-            socket.emit("joinRoom", { roomId: id, userId: authUser._id });
-        }
 
         let logId = null;
         try {
@@ -141,6 +146,25 @@ export const VideoCallProvider = ({ children }) => {
             console.error("VideoContext: Log error:", error);
         }
 
+        if (isGroup) {
+            console.log("VideoContext: Direct Notification sent to group members");
+            groupMembers.forEach(memberId => {
+                if (memberId !== authUser?._id) {
+                    socket.emit('callUser', { 
+                        userToCall: memberId, 
+                        from: authUser?._id, 
+                        callerName: authUser?.fullName,
+                        logId: logId,
+                        groupName: groupName,
+                        groupId: id // Send the actual group ID
+                    });
+                }
+            });
+            // Initiator joins the room to start mesh logic
+            socket.emit("joinRoom", { roomId: id, userId: authUser._id });
+            return;
+        }
+
         const peer = new Peer({ 
             initiator: true, 
             trickle: false, 
@@ -156,28 +180,13 @@ export const VideoCallProvider = ({ children }) => {
 
         peer.on('signal', (data) => {
             console.log("VideoContext: Initiator signaling...");
-            if (isGroup) {
-                groupMembers.forEach(memberId => {
-                    if (memberId !== authUser?._id) {
-                        socket.emit('callUser', { 
-                            userToCall: memberId, 
-                            signalData: data, 
-                            from: authUser?._id, 
-                            callerName: authUser?.fullName,
-                            logId: logId,
-                            groupName: groupName
-                        });
-                    }
-                });
-            } else {
-                socket.emit('callUser', { 
-                    userToCall: id, 
-                    signalData: data, 
-                    from: authUser._id, 
-                    callerName: authUser.fullName,
-                    logId: logId
-                });
-            }
+            socket.emit('callUser', { 
+                userToCall: id, 
+                signalData: data, 
+                from: authUser._id, 
+                callerName: authUser.fullName,
+                logId: logId
+            });
         });
 
         peer.on('stream', (incomingStream) => {
@@ -193,13 +202,19 @@ export const VideoCallProvider = ({ children }) => {
     }, [authUser, socket, getMediaStream]);
 
     const handleUserJoined = useCallback(async ({ userId, signal }) => {
-        console.log("VideoContext: User joined room:", userId);
+        console.log("VideoContext: Group User Event:", userId, signal ? "SignalReceived" : "NewUserJoined");
+        
+        // Prevent duplicate peers for the same user
+        if (groupPeersRef.current.find(p => p.peerID === userId)) {
+            console.log("VideoContext: Peer already exists for", userId);
+            return;
+        }
+
         const stream = await getMediaStream();
         if (!stream) return;
 
-        // If we receive a signal, it means someone is trying to connect to us
         if (signal) {
-            console.log("VideoContext: Received signal from joining user", userId);
+            console.log("VideoContext: Responding to signal from", userId);
             const peer = new Peer({
                 initiator: false,
                 trickle: false,
@@ -214,14 +229,16 @@ export const VideoCallProvider = ({ children }) => {
             peer.on('stream', (incomingStream) => {
                 setPeers(prev => {
                     if (prev.find(p => p.peerID === userId)) return prev;
-                    return [...prev, { peerID: userId, stream: incomingStream, peer }];
+                    return [...prev, { peerID: userId, stream: incomingStream }];
                 });
             });
 
+            peer.on('error', (err) => console.error("VideoContext: Group Peer Error (Responder):", err));
+
             peer.signal(signal);
+            groupPeersRef.current.push({ peerID: userId, peer });
         } else {
-            // If no signal, we are the ones who were already in the room, so we initiate connection to the new user
-            console.log("VideoContext: Initiating connection to new user", userId);
+            console.log("VideoContext: Initiating to new user", userId);
             const peer = new Peer({
                 initiator: true,
                 trickle: false,
@@ -236,33 +253,34 @@ export const VideoCallProvider = ({ children }) => {
             peer.on('stream', (incomingStream) => {
                 setPeers(prev => {
                     if (prev.find(p => p.peerID === userId)) return prev;
-                    return [...prev, { peerID: userId, stream: incomingStream, peer }];
+                    return [...prev, { peerID: userId, stream: incomingStream }];
                 });
             });
+
+            peer.on('error', (err) => console.error("VideoContext: Group Peer Error (Initiator):", err));
+
+            groupPeersRef.current.push({ peerID: userId, peer });
         }
     }, [getMediaStream, socket, authUser?._id]);
 
     const handleReceivedSignal = useCallback(({ signal, id }) => {
-        console.log("VideoContext: Received returned signal for group call participant");
-        // We need to find the specific peer for this id
-        setPeers(prev => {
-            const peerObj = prev.find(p => p.peerID === id); // Note: server sends socket.id usually, but here we use userId or socket.id depending on implementation
-            if (peerObj && peerObj.peer) {
-                peerObj.peer.signal(signal);
-            }
-            return prev;
-        });
+        console.log("VideoContext: Processing returned signal from participant", id);
+        const peerObj = groupPeersRef.current.find(p => p.peerID === id);
+        if (peerObj && peerObj.peer) {
+            peerObj.peer.signal(signal);
+        } else {
+            console.warn("VideoContext: Received signal for unknown peer", id);
+        }
     }, []);
 
     const handleUserLeft = useCallback(({ userId }) => {
         console.log("VideoContext: User left group call:", userId);
-        setPeers(prev => {
-            const peerObj = prev.find(p => p.peerID === userId);
-            if (peerObj && peerObj.peer) {
-                peerObj.peer.destroy();
-            }
-            return prev.filter(p => p.peerID !== userId);
-        });
+        const peerObj = groupPeersRef.current.find(p => p.peerID === userId);
+        if (peerObj && peerObj.peer) {
+            peerObj.peer.destroy();
+            groupPeersRef.current = groupPeersRef.current.filter(p => p.peerID !== userId);
+        }
+        setPeers(prev => prev.filter(p => p.peerID !== userId));
     }, []);
 
     const endCall = useCallback(async (notifyPeer = true) => {
@@ -281,7 +299,7 @@ export const VideoCallProvider = ({ children }) => {
         if (notifyPeer) {
             if (isGroupCall) {
                 // If group call, just leave the room
-                socket.emit('leaveRoom', { roomId: call.logId, userId: authUser._id });
+                socket.emit('leaveRoom', { roomId: call.groupId || call.userToCall, userId: authUser._id });
             } else if (call.from) {
                 // If I received the call, notify the caller
                 socket.emit('endCall', { to: call.from });
@@ -297,9 +315,10 @@ export const VideoCallProvider = ({ children }) => {
         }
 
         // Clean up group peers
-        peers.forEach(p => {
+        groupPeersRef.current.forEach(p => {
             if (p.peer) p.peer.destroy();
         });
+        groupPeersRef.current = [];
         setPeers([]);
 
         if (localStream) {
@@ -317,6 +336,7 @@ export const VideoCallProvider = ({ children }) => {
         setCallDuration(0);
         setShowVideoModal(false);
         setIsGroupCall(false);
+        mediaStreamPromise.current = null;
     }, [localStream, call, socket, callLogId, callDuration, isGroupCall, authUser, callAccepted]);
 
     const rejectCall = useCallback(async () => {
@@ -330,9 +350,9 @@ export const VideoCallProvider = ({ children }) => {
     useEffect(() => {
         if (!socket) return;
         
-        const handleIncomingCall = ({ from, callerName, signal, logId, groupName }) => {
+        const handleIncomingCall = ({ from, callerName, signal, logId, groupName, groupId }) => {
             console.log("Socket: Incoming call signal received from", callerName);
-            setCall({ isReceivingCall: true, from, callerName, signal, logId, groupName });
+            setCall({ isReceivingCall: true, from, callerName, signal, logId, groupName, groupId });
         };
 
         const handleCallAccepted = (signal) => {
