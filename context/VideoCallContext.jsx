@@ -28,6 +28,7 @@ export const VideoCallProvider = ({ children }) => {
     const timerRef = useRef();
 
     const mediaStreamPromise = useRef(null);
+    const mediaRequestPending = useRef(false);
 
     const getMediaStream = useCallback(async () => {
         if (localStream) return localStream;
