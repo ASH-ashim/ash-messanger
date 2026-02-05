@@ -6,7 +6,7 @@ import Login from '../../public/login.jpg'
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
-    const [currState, setCurrState] = useState("Sign up");
+    const [currState, setCurrState] = useState("Sign up")
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
