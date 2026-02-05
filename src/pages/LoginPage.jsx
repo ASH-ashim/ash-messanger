@@ -124,20 +124,20 @@ const LoginPage = () => {
             <div className="fixed top-1/2 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500" />
 
             {/* Content Container */}
-            <div className="relative z-10 min-h-[100dvh] flex flex-col lg:flex-row items-center justify-center gap-6 md:gap-8 lg:gap-16 p-4 md:p-8">
+            <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-10 md:gap-14 lg:gap-20 px-6 py-12 md:py-20 lg:py-10">
                 
                 {/* Left Side - Logo & Branding */}
-                <div className="flex flex-col items-center gap-2 md:gap-4 lg:gap-6 animate-in fade-in slide-in-from-top lg:slide-in-from-left duration-700 py-2 md:py-4 lg:py-0">
+                <div className="flex flex-col items-center lg:items-start gap-4 md:gap-6 animate-in fade-in slide-in-from-top lg:slide-in-from-left duration-700">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
                         <img 
                             src='image.png' 
                             alt="Logo" 
-                            className="relative w-20 md:w-32 lg:w-56 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" 
+                            className="relative w-24 md:w-32 lg:w-48 2xl:w-64 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" 
                         />
                     </div>
-                    <div className="text-center hidden md:block">
-                        <h1 className="text-xl md:text-2xl lg:text-4xl 2xl:text-6xl font-black text-white tracking-tight">
+                    <div className="text-center lg:text-left hidden md:block">
+                        <h1 className="text-2xl md:text-3xl lg:text-5xl 2xl:text-7xl font-black text-white tracking-tight leading-tight">
                             Connect <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">Instantly</span>
                         </h1>
                         <p className="text-white/50 mt-1 md:mt-2 text-xs md:text-sm lg:text-base 2xl:text-xl max-w-xs 2xl:max-w-md">
@@ -147,7 +147,7 @@ const LoginPage = () => {
                 </div>
 
                 {/* Right Side - Glass Card Form */}
-                <div className="w-full max-w-md 2xl:max-w-2xl animate-in fade-in slide-in-from-bottom lg:slide-in-from-right duration-700 delay-200 pb-10">
+                <div className="w-full max-w-md 2xl:max-w-2xl animate-in fade-in slide-in-from-bottom lg:slide-in-from-right duration-700 delay-200">
                     <form 
                         onSubmit={onSubmitHandler}
                         className='relative backdrop-blur-2xl bg-white/10 border border-white/20 rounded-3xl p-5 md:p-8 2xl:p-12 shadow-2xl shadow-black/30'

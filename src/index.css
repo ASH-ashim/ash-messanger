@@ -9,12 +9,10 @@
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   background: #0f0f1a;
-  height: 100dvh;
+  min-height: 100dvh;
   width: 100vw;
-  position: fixed;
-  /* Prevents scroll bounce on mobile */
+  overflow-x: hidden;
 }
 
 #root {
