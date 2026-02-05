@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }) => {
             toast.success(data.message || "Success!");
             return true;
         } catch (error) {
+            console.error(`Auth Error at ${endpoint}:`, error.response?.data || error.message);
             toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
             return false;
         }
