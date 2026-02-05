@@ -127,7 +127,7 @@ const LoginPage = () => {
             <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-10 md:gap-14 lg:gap-20 px-6 py-12 md:py-20 lg:py-10">
                 
                 {/* Left Side - Logo & Branding */}
-                <div className="flex flex-col items-center lg:items-start gap-4 md:gap-6 animate-in fade-in slide-in-from-top lg:slide-in-from-left duration-700">
+                <div className="flex flex-col items-center lg:items-start  animate-in fade-in slide-in-from-top lg:slide-in-from-left duration-700">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
                         <img 
