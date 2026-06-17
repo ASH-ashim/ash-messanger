@@ -5,20 +5,20 @@ import { formatMessageTime } from '../lib/utils';
 import { ChatContext } from '../../context/ChatContext';
 import { AuthContext } from '../../context/AuthContext';
 import { VideoCallContext } from '../../context/VideoCallContext';
-import toast from 'react-hot-toast';
+
 import { useNavigate } from 'react-router-dom';
 import VoiceRecorder from './VoiceRecorder';
 import GroupMembersModal from './GroupMembersModal';
 
 const ChatContainer = () => {
-    const { 
-        messages, 
-        selectedUser, 
-        selectedGroup, 
-        setSelectedUser, 
-        setSelectedGroup, 
-        sendMessage, 
-        getMessages, 
+    const {
+        messages,
+        selectedUser,
+        selectedGroup,
+        setSelectedUser,
+        setSelectedGroup,
+        sendMessage,
+        getMessages,
         deleteMessage,
         leftSidebarOpen,
         setLeftSidebarOpen,
@@ -33,44 +33,71 @@ const ChatContainer = () => {
     const [input, setInput] = useState("");
     const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
     const [showMembersModal, setShowMembersModal] = useState(false);
-    
+
     const navigate = useNavigate();
 
     const chatInfo = selectedGroup || selectedUser;
     const isGroupChat = !!selectedGroup;
 
     const handleSendMessage = async (e) => {
-        if (e) e.preventDefault(); 
+        if (e) e.preventDefault();
         if (input.trim() === "") return;
-        
-        await sendMessage({ text: input.trim() }); 
-        setInput(""); 
+
+        await sendMessage({ text: input.trim() });
+        setInput("");
+    };
+
+    const resizeImage = (file, maxWidth = 1000, maxHeight = 1000) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    let { width, height } = img;
+                    const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    resolve(canvas.toDataURL('image/jpeg', 0.75));
+                };
+                img.onerror = reject;
+                img.src = reader.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     };
 
     const handleSendImage = async (e) => {
         const file = e.target.files[0];
-        if (!file || !file.type.startsWith("image/")) return toast.error("Please select an image file.");
+        if (!file || !file.type.startsWith("image/")) {
+            console.error("Please select an image file.");
+            return;
+        }
 
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-            await sendMessage({ image: reader.result }); 
-            e.target.value = ""; 
-        };
-        reader.readAsDataURL(file); 
+        const resizedImage = await resizeImage(file);
+        await sendMessage({ image: resizedImage });
+        e.target.value = "";
     };
 
     const handleSendVoice = async (audioData, duration) => {
-        await sendMessage({ 
-            audio: audioData, 
-            audioDuration: duration 
+        await sendMessage({
+            audio: audioData,
+            audioDuration: duration
         });
     };
 
     useEffect(() => {
-        if (chatInfo?._id) { 
+        if (chatInfo?._id) {
             getMessages(chatInfo._id);
         }
-    }, [chatInfo?._id, getMessages]); 
+    }, [chatInfo?._id, getMessages]);
 
     useEffect(() => {
         if (scrollEnd.current && messages) {
@@ -107,12 +134,12 @@ const ChatContainer = () => {
     }
 
     return (
-        <div className="h-full min-h-0 overflow-hidden relative bg-[#1e1e2e]/50 backdrop-blur-3xl flex flex-col border-l border-white/5 animate-in fade-in slide-in-from-right-4 duration-300"> 
+        <div className="h-full min-h-0 overflow-hidden relative bg-[#1e1e2e]/90 flex flex-col border-l border-white/5">
             {/* Header */}
             <div className="flex items-center gap-2 md:gap-4 px-3 md:px-4 py-2 md:py-3 border-b border-white/5 bg-black/20 backdrop-blur-md flex-shrink-0">
                 {/* Back Button */}
-                <button 
-                    onClick={handleBack} 
+                <button
+                    onClick={handleBack}
                     className="p-2 md:p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition-all active:scale-95 flex-shrink-0"
                     title="Back to contacts"
                 >
@@ -120,10 +147,10 @@ const ChatContainer = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
-                
+
                 {/* User/Group Info - Clickable to open right sidebar */}
-                <div 
-                    className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:bg-white/5 rounded-xl py-1 px-2 -ml-1 transition-all" 
+                <div
+                    className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:bg-white/5 rounded-xl py-1 px-2 -ml-1 transition-all"
                     onClick={() => {
                         if (isGroupChat) {
                             setShowMembersModal(true);
@@ -141,17 +168,17 @@ const ChatContainer = () => {
                                 ))}
                             </div>
                         ) : (
-                            <img 
-                                src={isGroupChat ? chatInfo.groupPic || "/group.png" : chatInfo.profilePic || assets.avatar_icon} 
-                                alt="Profile" 
-                                className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-white/10 shadow-lg" 
+                            <img
+                                src={isGroupChat ? chatInfo.groupPic || "/group.png" : chatInfo.profilePic || assets.avatar_icon}
+                                alt="Profile"
+                                className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-white/10 shadow-lg"
                             />
                         )}
                         {!isGroupChat && onlineUsers.includes(chatInfo._id) && (
                             <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 md:w-3 md:h-3 bg-green-500 rounded-full border-2 border-[#1e1e2e]" />
                         )}
                     </div>
-    
+
                     <div className="flex-1 min-w-0">
                         <h3 className="text-white text-base 2xl:text-lg font-bold truncate">{chatInfo.name || chatInfo.fullName}</h3>
                         <div className="flex items-center gap-1.5">
@@ -175,12 +202,12 @@ const ChatContainer = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </div>
-                
+
                 {/* Action Buttons */}
                 <div className="flex items-center gap-2">
-                    <button 
-                        onClick={startCall} 
-                        className="p-2 md:p-2.5 bg-violet-500/10 hover:bg-violet-500 text-violet-400 hover:text-white rounded-xl transition-all active:scale-95 flex-shrink-0" 
+                    <button
+                        onClick={startCall}
+                        className="p-2 md:p-2.5 bg-violet-500/10 hover:bg-violet-500 text-violet-400 hover:text-white rounded-xl transition-all active:scale-95 flex-shrink-0"
                         title="Start Video Call"
                     >
                         <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,18 +252,18 @@ const ChatContainer = () => {
 
                         const isMine = msg.senderId?._id === authUser?._id || msg.senderId === authUser?._id;
                         const sender = msg.senderId?._id ? msg.senderId : { fullName: "User" };
-                        
+
                         return (
                             <div key={msg._id} className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200 ${isMine ? 'justify-end' : 'justify-start'} group`}>
                                 {!isMine && (
                                     <img src={sender.profilePic || assets.avatar_icon} className="w-8 h-8 rounded-full self-end border border-white/5" alt="" />
                                 )}
-                                
+
                                 <div className={`flex flex-col gap-1 max-w-[70%] ${isMine ? 'items-end' : 'items-start'}`}>
                                     {isGroupChat && !isMine && (
                                         <span className="text-[10px] text-violet-400 font-bold ml-1">{sender.fullName}</span>
                                     )}
-                                    
+
                                     {isMine && (
                                         <button onClick={() => deleteMessage(msg._id)} className="opacity-0 group-hover:opacity-100 p-1 text-white/20 hover:text-red-400 transition">
                                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,12 +272,12 @@ const ChatContainer = () => {
                                         </button>
                                     )}
 
-                                    <div className={`p-4 rounded-2xl shadow-sm text-sm 2xl:text-base ${isMine ? 'bg-violet-600 text-white rounded-br-none' : 'bg-[#282a36] text-white/90 border border-white/5 rounded-bl-none'}`}>
-                                        {msg.image && <img src={msg.image} className="max-w-full rounded-lg mb-2" alt="attachment" />}
+                                    <div className={`p-4 rounded-2xl shadow-sm text-sm 2xl:text-base ${isMine ? 'text-white rounded-br-none' : 'bg-[#282a36] text-white/90 border border-white/5 rounded-bl-none'}`}>
+                                        {msg.image && <img src={msg.image} className="max-w-full max-h-[320px] rounded-lg mb-2 object-contain" alt="attachment" />}
                                         {msg.audio && (
                                             <div className="flex items-center gap-3">
                                                 <div className={`p-2 rounded-full ${isMine ? 'bg-white/20' : 'bg-violet-500/20 text-violet-400'}`}>
-                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/></svg>
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" /></svg>
                                                 </div>
                                                 <audio src={msg.audio} controls className="h-8 max-w-[200px]" />
                                             </div>
@@ -268,31 +295,31 @@ const ChatContainer = () => {
 
             {/* Input Area */}
             <div className="p-2 md:p-4 2xl:p-6 bg-black/20 backdrop-blur-xl border-t border-white/5">
-                <div className="flex items-center gap-1 md:gap-2 bg-white/5 p-1.5 md:p-2 2xl:p-4 rounded-2xl border border-white/5 focus-within:border-violet-500/50 transition-all">
-                    <input 
-                        type="file" id='image' 
+                <div className="flex items-center gap-1 md:gap-2 bg-white/5 p-1.5 md:p-2 2xl:p-4 rounded-2xl border border-white/5  transition-all">
+                    <input
+                        type="file" id='image'
                         onChange={handleSendImage}
-                        accept='image/*' hidden 
+                        accept='image/*' hidden
                     />
                     <label htmlFor="image" className="p-1.5 md:p-2 hover:bg-white/10 rounded-xl cursor-pointer transition text-white/40 hover:text-white flex-shrink-0">
                         <img src={assets.gallery_icon} className="w-5" alt="Gallery" />
                     </label>
-                    <button 
+                    <button
                         onClick={() => setShowVoiceRecorder(true)}
                         className="p-1.5 md:p-2 hover:bg-white/10 rounded-xl transition text-white/40 hover:text-white flex-shrink-0"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                     </button>
-                    
-                    <input 
+
+                    <input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                         placeholder="Type a message..."
                         className="flex-1 bg-transparent border-none outline-none text-white text-sm 2xl:text-lg px-2 placeholder-white/20"
                     />
-                    
-                    <button 
+
+                    <button
                         onClick={handleSendMessage}
                         className="p-2.5 md:p-3 bg-violet-500 hover:bg-violet-600 text-white rounded-xl shadow-lg shadow-violet-500/30 transition-all active:scale-95 disabled:opacity-50 flex-shrink-0"
                         disabled={!input.trim()}

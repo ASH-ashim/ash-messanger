@@ -1,9 +1,7 @@
 import React, { useContext, useState } from 'react';
-import assets from '../assets/assets'; 
-import { AuthContext } from '../../context/AuthContext'; 
+import assets from '../assets/assets';
+import { AuthContext } from '../../context/AuthContext';
 import Login from '../../public/login.jpg'
-
-import toast from 'react-hot-toast';
 
 const LoginPage = () => {
     const [currState, setCurrState] = useState("Sign up")
@@ -12,29 +10,29 @@ const LoginPage = () => {
     const [password, setPassword] = useState("");
     const [bio, setBio] = useState("");
     const [isDataSubmitted, setIsDataSubmitted] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); 
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const { login, signup } = useContext(AuthContext);
 
 
     const onSubmitHandler = async (event) => {
-        event.preventDefault(); 
+        event.preventDefault();
         setIsLoading(true);
 
         try {
             if (!email || !password) {
-                toast.error("Email and password are required.");
+                console.error("Email and password are required.");
                 setIsLoading(false);
                 return;
             }
             if (!/^\S+@\S+\.\S+$/.test(email)) {
-                toast.error("Please enter a valid email.");
+                console.error("Please enter a valid email.");
                 setIsLoading(false);
                 return;
             }
             if (password.length < 6) {
-                toast.error("Password must be at least 6 characters.");
+                console.error("Password must be at least 6 characters.");
                 setIsLoading(false);
                 return;
             }
@@ -43,7 +41,7 @@ const LoginPage = () => {
                 if (!isDataSubmitted) {
 
                     if (!fullName) {
-                        toast.error("Full Name is required for signup.");
+                        console.error("Full Name is required for signup.");
                         setIsLoading(false);
                         return;
                     }
@@ -53,7 +51,7 @@ const LoginPage = () => {
                 } else {
 
                     if (!bio) {
-                        toast.error("Bio is required to complete signup.");
+                        console.error("Bio is required to complete signup.");
                         setIsLoading(false);
                         return;
                     }
@@ -62,7 +60,6 @@ const LoginPage = () => {
                     const success = await signup({ fullName, email: email.trim(), password, bio });
 
                     if (success) {
-                        toast.success("Signup successful! You can now log in.");
                         setEmail("");
                         setPassword("");
                         setFullName("");
@@ -74,14 +71,12 @@ const LoginPage = () => {
                         console.log("CLIENT (LoginPage): Signup failed.");
                     }
                 }
-            } else { 
+            } else {
 
                 console.log("CLIENT (LoginPage): Attempting LOGIN with data:", { email: email.trim(), password });
                 const success = await login({ email: email.trim(), password });
 
                 if (success) {
-                    toast.success("Login successful!");
-
                     setEmail("");
                     setPassword("");
 
@@ -93,7 +88,7 @@ const LoginPage = () => {
         } catch (error) {
             console.error("LoginPage onSubmitHandler error:", error);
         } finally {
-            setIsLoading(false); 
+            setIsLoading(false);
         }
     };
     const resetForm = () => {
@@ -101,39 +96,37 @@ const LoginPage = () => {
         setPassword("");
         setFullName("");
         setBio("");
-        setIsDataSubmitted(false); 
-        setIsLoading(false); 
+        setIsDataSubmitted(false);
+        setIsLoading(false);
     };
 
 
     return (
         <div className='min-h-[100dvh] w-full relative overflow-y-auto'>
             {/* Full Screen Background Image */}
-            <div 
+            <div
                 className="fixed inset-0 bg-cover bg-center bg-no-repeat scale-105"
                 style={{ backgroundImage: `url(${Login})` }}
             />
-            
+
             {/* Gradient Overlays for depth */}
             <div className="fixed inset-0 bg-gradient-to-br from-violet-900/70 via-black/50 to-indigo-900/70" />
             <div className="fixed inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-            
-            {/* Animated Floating Orbs */}
-            <div className="fixed top-20 left-20 w-72 h-72 bg-violet-500/20 rounded-full blur-3xl animate-pulse" />
-            <div className="fixed bottom-20 right-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="fixed top-1/2 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500" />
+
+            {/* Soft ambient glow */}
+            <div className="fixed top-16 left-16 w-48 h-48 bg-violet-400/10 rounded-full blur-3xl opacity-25" />
+            <div className="fixed bottom-16 right-16 w-60 h-60 bg-indigo-400/10 rounded-full blur-3xl opacity-20" />
 
             {/* Content Container */}
             <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-10 md:gap-14 lg:gap-20 px-6 py-12 md:py-20 lg:py-10">
-                
+
                 {/* Left Side - Logo & Branding */}
-                <div className="flex flex-col items-center lg:items-start  animate-in fade-in slide-in-from-top lg:slide-in-from-left duration-700">
+                <div className="flex flex-col items-center lg:items-start">
                     <div className="relative group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
-                        <img 
-                            src='image.png' 
-                            alt="Logo" 
-                            className="relative w-24 md:w-32 lg:w-48 2xl:w-64 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" 
+                        <img
+                            src='image.png'
+                            alt="Logo"
+                            className="relative w-24 md:w-32 lg:w-48 2xl:w-64 drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
                         />
                     </div>
                     <div className="text-center lg:text-left hidden md:block">
@@ -141,20 +134,20 @@ const LoginPage = () => {
                             Connect <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">Instantly</span>
                         </h1>
                         <p className="text-white/50 mt-1 md:mt-2 text-xs md:text-sm lg:text-base 2xl:text-xl max-w-xs 2xl:max-w-md">
-                            Join millions of users sharing moments together
+                            Join quintillions of users sharing moments together
                         </p>
                     </div>
                 </div>
 
                 {/* Right Side - Glass Card Form */}
-                <div className="w-full max-w-md 2xl:max-w-2xl animate-in fade-in slide-in-from-bottom lg:slide-in-from-right duration-700 delay-200">
-                    <form 
+                <div className="w-full max-w-md 2xl:max-w-2xl">
+                    <form
                         onSubmit={onSubmitHandler}
-                        className='relative backdrop-blur-2xl bg-white/10 border border-white/20 rounded-3xl p-5 md:p-8 2xl:p-12 shadow-2xl shadow-black/30'
+                        className='relative bg-white/10 border border-white/20 rounded-3xl p-5 md:p-8 2xl:p-12 shadow-lg'
                     >
                         {/* Glow effect behind card */}
                         <div className="absolute -inset-1 bg-gradient-to-r from-violet-600/20 via-transparent to-indigo-600/20 rounded-3xl blur-xl -z-10" />
-                        
+
                         {/* Header */}
                         <div className='flex justify-between items-center mb-6 md:mb-8'>
                             <div>
@@ -162,7 +155,7 @@ const LoginPage = () => {
                                     {currState === "Sign up" ? "Create Account" : "Welcome Back"}
                                 </h2>
                                 <p className="text-white/40 text-xs md:text-sm 2xl:text-lg mt-1">
-                                    {currState === "Sign up" 
+                                    {currState === "Sign up"
                                         ? (isDataSubmitted ? "Almost there! Tell us about yourself" : "Fill in your details to get started")
                                         : "Sign in to continue chatting"
                                     }
@@ -193,7 +186,7 @@ const LoginPage = () => {
                                             type="text"
                                             className='w-full p-3 md:p-4 2xl:p-6 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300 2xl:text-xl'
                                             placeholder="John Doe"
-                                            required 
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -209,7 +202,7 @@ const LoginPage = () => {
                                                 value={email}
                                                 type="email"
                                                 placeholder='you@example.com'
-                                                required 
+                                                required
                                                 className='w-full p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
                                             />
                                         </div>
@@ -223,7 +216,7 @@ const LoginPage = () => {
                                                 value={password}
                                                 type="password"
                                                 placeholder='••••••••'
-                                                required 
+                                                required
                                                 className='w-full p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300'
                                             />
                                         </div>
@@ -240,7 +233,7 @@ const LoginPage = () => {
                                         rows={4}
                                         className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300 resize-none"
                                         placeholder='Tell us a bit about yourself...'
-                                        required 
+                                        required
                                     />
                                 </div>
                             )}
@@ -250,9 +243,8 @@ const LoginPage = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full mt-6 py-3 md:py-4 relative overflow-hidden rounded-xl font-bold text-white transition-all duration-300 active:scale-[0.98] ${
-                                isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-violet-500/25'
-                            }`}
+                            className={`w-full mt-6 py-3 md:py-4 relative overflow-hidden rounded-xl font-bold text-white transition-all duration-300 active:scale-[0.98] ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-violet-500/25'
+                                }`}
                         >
                             <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600" />
                             <div className="absolute inset-0 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 opacity-0 hover:opacity-100 transition-opacity duration-300" />
@@ -297,7 +289,7 @@ const LoginPage = () => {
                             {currState === "Sign up" ? (
                                 <p className='text-xs md:text-sm text-white/50'>
                                     Already have an account?{' '}
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => { setCurrState("Login"); resetForm(); }}
                                         className='font-semibold text-violet-400 hover:text-violet-300 transition-colors'
@@ -308,7 +300,7 @@ const LoginPage = () => {
                             ) : (
                                 <p className='text-xs md:text-sm text-white/50'>
                                     Don't have an account?{' '}
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => { setCurrState("Sign up"); resetForm(); }}
                                         className='font-semibold text-violet-400 hover:text-violet-300 transition-colors'

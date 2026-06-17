@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import toast from 'react-hot-toast';
 
 const VoiceRecorder = ({ onSendVoice, onClose }) => {
     const [isRecording, setIsRecording] = useState(false);
@@ -7,7 +6,7 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
     const [recordingTime, setRecordingTime] = useState(0);
     const [audioURL, setAudioURL] = useState(null);
     const [audioBlob, setAudioBlob] = useState(null);
-    
+
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
     const timerRef = useRef(null);
@@ -30,11 +29,11 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             streamRef.current = stream;
-            
+
             const mediaRecorder = new MediaRecorder(stream, {
                 mimeType: 'audio/webm'
             });
-            
+
             mediaRecorderRef.current = mediaRecorder;
             audioChunksRef.current = [];
 
@@ -49,7 +48,7 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
                 const audioUrl = URL.createObjectURL(audioBlob);
                 setAudioURL(audioUrl);
                 setAudioBlob(audioBlob);
-                
+
                 // Stop all tracks
                 if (streamRef.current) {
                     streamRef.current.getTracks().forEach(track => track.stop());
@@ -58,7 +57,7 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
 
             mediaRecorder.start();
             setIsRecording(true);
-            
+
             // Start timer
             timerRef.current = setInterval(() => {
                 setRecordingTime(prev => prev + 1);
@@ -66,7 +65,6 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
 
         } catch (error) {
             console.error('Error accessing microphone:', error);
-            toast.error('Failed to access microphone');
         }
     };
 
@@ -82,7 +80,7 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'paused') {
             mediaRecorderRef.current.resume();
             setIsPaused(false);
-            
+
             timerRef.current = setInterval(() => {
                 setRecordingTime(prev => prev + 1);
             }, 1000);
@@ -109,7 +107,7 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
 
     const sendVoiceMessage = async () => {
         if (!audioBlob) {
-            toast.error('No audio recorded');
+            console.error('No audio recorded');
             return;
         }
 
@@ -122,7 +120,7 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
                 base64Audio = base64Audio.replace(/;codecs=[^;]+/, '');
             }
             onSendVoice(base64Audio, recordingTime);
-            
+
             // Reset
             setRecordingTime(0);
             setAudioURL(null);
@@ -162,8 +160,8 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
                         <div className="relative mb-4">
                             <div className="w-24 h-24 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
                                 <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
                                 </svg>
                             </div>
                             {isPaused && (
@@ -219,7 +217,7 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
                                             title="Pause"
                                         >
                                             <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
                                             </svg>
                                         </button>
                                     ) : (
@@ -229,23 +227,23 @@ const VoiceRecorder = ({ onSendVoice, onClose }) => {
                                             title="Resume"
                                         >
                                             <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M8 5v14l11-7z"/>
+                                                <path d="M8 5v14l11-7z" />
                                             </svg>
                                         </button>
                                     )}
-                                    
+
                                     <button
                                         onClick={stopRecording}
                                         className="p-4 bg-red-500 hover:bg-red-600 rounded-full transition"
                                         title="Stop"
                                     >
                                         <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M6 6h12v12H6z"/>
+                                            <path d="M6 6h12v12H6z" />
                                         </svg>
                                     </button>
                                 </>
                             )}
-                            
+
                             <button
                                 onClick={cancelRecording}
                                 className="p-4 bg-gray-600 hover:bg-gray-700 rounded-full transition"

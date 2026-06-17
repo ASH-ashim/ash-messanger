@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import assets from '../assets/assets';
-import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa';
 import Profile from "../../public/profile.jpg"
@@ -19,7 +18,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         if (!token) {
-            toast.error('Please login to access this page');
+            console.error('Please login to access this page');
             navigate('/login');
         } else if (authUser) {
             setFullName(authUser.fullName || '');
@@ -44,7 +43,7 @@ const ProfilePage = () => {
         const success = await subscribeToPush(true);
         if (success) {
             setNotificationPermission('granted');
-            toast.success("Notifications enabled!");
+            console.log("Notifications enabled!");
         } else {
             setNotificationPermission(Notification.permission);
         }
@@ -54,7 +53,7 @@ const ProfilePage = () => {
         e.preventDefault();
 
         if (!token) {
-            toast.error("You are not authenticated.");
+            console.error("You are not authenticated.");
             return;
         }
 
@@ -69,13 +68,12 @@ const ProfilePage = () => {
         try {
             const success = await updateProfile(profileData);
             if (success) {
-                toast.success("Profile updated successfully!");
+                console.log("Profile updated successfully!");
                 setNewProfilePic(null);
                 setPreviewProfilePicUrl(null);
             }
         } catch (error) {
             console.error("Profile update error in component:", error);
-            toast.error("Failed to update profile.");
         } finally {
             setIsUpdating(false);
         }
@@ -98,34 +96,34 @@ const ProfilePage = () => {
     return (
         <div className="min-h-[100dvh] w-full relative overflow-y-auto">
             {/* Full Screen Background Image */}
-            <div 
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
+            <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: `url(${Profile})` }}
             />
-            
+
             {/* Dark Overlay to reduce brightness */}
             <div className="absolute inset-0 bg-black/70" />
-            
+
             {/* Gradient Overlay for depth */}
             <div className="absolute inset-0 bg-gradient-to-br from-violet-900/40 via-black/50 to-indigo-900/40" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
 
             {/* Subtle animated orbs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-20 left-10 w-64 h-64 bg-violet-500/10 rounded-full blur-[100px] animate-pulse" />
-                <div className="absolute bottom-20 right-10 w-72 h-72 bg-indigo-500/10 rounded-full blur-[100px] animate-pulse delay-1000" />
+                <div className="absolute top-20 left-10 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl opacity-20" />
+                <div className="absolute bottom-20 right-10 w-56 h-56 bg-indigo-500/10 rounded-full blur-3xl opacity-15" />
             </div>
 
             {/* Content Container */}
             <div className="relative z-10 min-h-[100dvh] flex items-center justify-center p-4 md:p-8 py-12 md:py-20 2xl:py-32">
-                <div className="w-full max-w-lg 2xl:max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    
+                <div className="w-full max-w-lg 2xl:max-w-3xl">
+
                     {/* Main Glassmorphism Card */}
-                    <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl overflow-hidden shadow-2xl shadow-black/50">
-                        
+                    <div className="relative backdrop-blur-sm bg-white/10 border border-white/20 rounded-3xl overflow-hidden shadow-lg">
+
                         {/* Card Glow Effect */}
                         <div className="absolute -inset-px bg-gradient-to-b from-violet-500/20 via-transparent to-indigo-500/20 rounded-3xl -z-10 blur-sm" />
-                        
+
                         {/* Back Button */}
                         <button
                             onClick={() => navigate('/')}
@@ -150,7 +148,7 @@ const ProfilePage = () => {
                                 <div className="relative">
                                     {/* Simple minimal border */}
                                     <div className="absolute -inset-1 bg-white/20 rounded-full" />
-                                    
+
                                     {/* Image Container */}
                                     <div className='relative w-32 h-32 2xl:w-48 2xl:h-48 rounded-full overflow-hidden border-2 border-white/30 bg-[#1e1e2e] flex items-center justify-center'>
                                         {hasProfileImage ? (
@@ -166,7 +164,7 @@ const ProfilePage = () => {
                                         ) : (
                                             <FaUser className="w-16 h-16 text-white/40" />
                                         )}
-                                        
+
                                         {/* Hover Overlay */}
                                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div className="flex flex-col items-center gap-1">
@@ -248,7 +246,7 @@ const ProfilePage = () => {
                                         </div>
                                     </div>
                                     {notificationPermission !== 'granted' && (
-                                        <button 
+                                        <button
                                             type="button"
                                             onClick={handleEnableNotifications}
                                             className="px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white text-xs font-bold rounded-xl transition-all active:scale-95"
@@ -264,9 +262,8 @@ const ProfilePage = () => {
                                     <button
                                         type="submit"
                                         disabled={isUpdating}
-                                        className={`w-full py-4 relative overflow-hidden rounded-xl font-bold text-gray-900 transition-all duration-300 active:scale-[0.98] ${
-                                            isUpdating ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-amber-500/25'
-                                        }`}
+                                        className={`w-full py-4 relative overflow-hidden rounded-xl font-bold text-gray-900 transition-all duration-300 active:scale-[0.98] ${isUpdating ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-amber-500/25'
+                                            }`}
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400" />
                                         <div className="absolute inset-0 bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 opacity-0 hover:opacity-100 transition-opacity duration-300" />

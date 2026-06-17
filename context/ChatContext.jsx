@@ -1,8 +1,7 @@
 
 import { useEffect, useState, createContext, useContext, useCallback } from "react";
-import { AuthContext } from "./AuthContext"; 
+import { AuthContext } from "./AuthContext";
 import axios from "axios";
-import toast from "react-hot-toast";
 
 
 export const ChatContext = createContext();
@@ -36,7 +35,7 @@ export const ChatProvider = ({ children }) => {
                 setUsers(data.users);
                 setUnseenMessages(data.unseenMessages || {});
             } else {
-                toast.error(data.message || "Failed to fetch users.");
+                console.error(data.message || "Failed to fetch users.");
                 setUsers([]);
             }
         } catch (error) {
@@ -62,11 +61,11 @@ export const ChatProvider = ({ children }) => {
             const { data } = await axios.post("/api/messages/groups/create", groupData);
             if (data.success) {
                 setGroups(prev => [...prev, data.group]);
-                toast.success("Group created successfully!");
+                console.log("Group created successfully!");
                 return data.group;
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to create group");
+            console.error(error.response?.data?.message || "Failed to create group");
         }
     };
 
@@ -93,7 +92,7 @@ export const ChatProvider = ({ children }) => {
             if (data.success) {
                 setMessages(data.messages);
             } else {
-                toast.error(data.message || "Failed to fetch messages.");
+                console.error(data.message || "Failed to fetch messages.");
                 setMessages([]);
             }
         } catch (error) {
@@ -105,12 +104,12 @@ export const ChatProvider = ({ children }) => {
 
     const sendMessage = useCallback(async (messageData) => {
         if (!selectedUser?._id && !selectedGroup?._id) {
-            toast.error("No receiver selected.");
+            console.error("No receiver selected.");
             return;
         }
-        
+
         const endpoint = selectedGroup ? `/api/messages/send/group/${selectedGroup._id}` : `/api/messages/send/${selectedUser._id}`;
-        
+
         try {
             const { data } = await axios.post(endpoint, messageData);
             if (data.success) {
@@ -121,11 +120,10 @@ export const ChatProvider = ({ children }) => {
                     return prevMessages;
                 });
             } else {
-                toast.error(data.message || "Failed to send message.");
+                console.error(data.message || "Failed to send message.");
             }
         } catch (error) {
             console.error("ChatContext: Error sending message:", error);
-            toast.error("Failed to send message.");
         }
     }, [selectedUser?._id, selectedGroup?._id]);
 
@@ -136,11 +134,10 @@ export const ChatProvider = ({ children }) => {
             if (data.success) {
                 setMessages((prevMessages) => prevMessages.filter(msg => msg._id !== messageId));
             } else {
-                toast.error(data.message || "Failed to delete message.");
+                console.error(data.message || "Failed to delete message.");
             }
         } catch (error) {
             console.error("ChatContext: Error deleting message:", error);
-            toast.error("Failed to delete message.");
         }
     }, []);
 
@@ -175,7 +172,7 @@ export const ChatProvider = ({ children }) => {
                 if (prev.some(g => g._id === newGroup._id)) return prev;
                 return [...prev, newGroup];
             });
-            toast.success(`You were added to group: ${newGroup.name}`);
+            console.log(`You were added to group: ${newGroup.name}`);
         });
 
         socket.on("groupUpdated", (updatedGroup) => {
@@ -221,11 +218,11 @@ export const ChatProvider = ({ children }) => {
                 if (selectedGroup?._id === groupId) {
                     setSelectedGroup(data.group);
                 }
-                toast.success("Group updated!");
+                console.log("Group updated!");
                 return data.group;
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to update group");
+            console.error(error.response?.data?.message || "Failed to update group");
         }
     };
 

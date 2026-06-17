@@ -9,7 +9,7 @@ const RightSidebar = () => {
     const { logout, onlineUsers } = useContext(AuthContext);
 
     const [msgImages, setMsgImages] = useState([]);
-    
+
     const chatInfo = selectedGroup || selectedUser;
 
     useEffect(() => {
@@ -23,10 +23,10 @@ const RightSidebar = () => {
     if (!chatInfo) return null;
 
     return (
-        <div className="bg-[#1e1e2e]/50 h-full w-full flex flex-col relative animate-in fade-in duration-500">
+        <div className="bg-[#1e1e2e]/50 h-full w-full flex flex-col relative">
             {/* Close Button for Mobile/Tablet */}
             <div className="lg:hidden absolute top-4 right-4 z-10">
-                <button 
+                <button
                     onClick={() => setRightSidebarOpen(false)}
                     className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition-all active:scale-95"
                 >
@@ -39,23 +39,23 @@ const RightSidebar = () => {
             {/* Profile Info */}
             <div className='pt-12 px-6 flex flex-col items-center text-center'>
                 <div className="relative mb-4">
-                    <img 
-                        src={(selectedGroup ? selectedGroup.groupPic : selectedUser?.profilePic) || "/avatar.png"} 
+                    <img
+                        src={(selectedGroup ? selectedGroup.groupPic : selectedUser?.profilePic) || "/avatar.png"}
                         alt=""
-                        className='w-24 h-24 2xl:w-32 2xl:h-32 rounded-full object-cover border-2 border-violet-500/50 shadow-xl' 
+                        className='w-24 h-24 2xl:w-32 2xl:h-32 rounded-full object-cover border-2 border-violet-500/50 shadow-xl'
                     />
                     {!selectedGroup && selectedUser && onlineUsers.includes(selectedUser._id) && (
                         <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#1e1e2e]" />
                     )}
                 </div>
-                
+
                 <h2 className='text-white text-xl 2xl:text-2xl font-bold mb-1 truncate w-full'>
                     {selectedGroup ? selectedGroup.name : selectedUser?.fullName}
                 </h2>
                 <p className="text-white/40 text-xs 2xl:text-sm px-4 leading-relaxed line-clamp-3">
                     {selectedGroup ? selectedGroup.description : selectedUser?.bio || "No bio available"}
                 </p>
-                
+
                 {selectedGroup && (
                     <div className="mt-4 flex flex-wrap justify-center gap-1">
                         {selectedGroup.members.slice(0, 5).map(m => (
@@ -78,7 +78,7 @@ const RightSidebar = () => {
                     <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Shared Media</p>
                     <span className="text-[10px] text-violet-400 font-bold">{msgImages.length} items</span>
                 </div>
-                
+
                 {msgImages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 opacity-20">
                         <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,12 +89,12 @@ const RightSidebar = () => {
                 ) : (
                     <div className="grid grid-cols-2 gap-2">
                         {msgImages.map((url, index) => (
-                            <div 
-                                key={index} 
+                            <div
+                                key={index}
                                 onClick={() => window.open(url)}
                                 className="aspect-square cursor-pointer rounded-xl overflow-hidden group relative"
                             >
-                                <img src={url} alt="" className='w-full h-full object-cover transition duration-300 group-hover:scale-110'/>
+                                <img src={url} alt="" className='w-full h-full object-cover transition duration-300 group-hover:scale-110' />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -109,7 +109,7 @@ const RightSidebar = () => {
 
             {/* Logout Button */}
             <div className="absolute bottom-6 left-6 right-6">
-                <button 
+                <button
                     onClick={() => logout()}
                     className="w-full flex items-center justify-center gap-2 py-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-bold text-xs 2xl:text-base rounded-xl transition-all duration-300 group"
                 >

@@ -3,7 +3,6 @@ import { createContext, useContext, useState, useRef, useEffect, useCallback } f
 import Peer from 'simple-peer';
 import { AuthContext } from './AuthContext';
 import axios from 'axios';
-import toast from 'react-hot-toast';
 import IncomingCall from '../src/components/IncomingCall';
 import VideoCall from '../src/components/VideoCall';
 
@@ -33,7 +32,7 @@ export const VideoCallProvider = ({ children }) => {
     const getMediaStream = useCallback(async () => {
         if (localStream) return localStream;
         if (mediaStreamPromise.current) return mediaStreamPromise.current;
-        
+
         mediaStreamPromise.current = (async () => {
             try {
                 console.log("VideoContext: Requesting camera/mic...");
@@ -42,12 +41,11 @@ export const VideoCallProvider = ({ children }) => {
                 return stream;
             } catch (error) {
                 console.error("VideoContext: Device access error:", error);
-                toast.error("Could not access camera or microphone.");
                 mediaStreamPromise.current = null;
                 return null;
             }
         })();
-        
+
         return mediaStreamPromise.current;
     }, [localStream]);
 
@@ -82,9 +80,9 @@ export const VideoCallProvider = ({ children }) => {
             return;
         }
 
-        const peer = new Peer({ 
-            initiator: false, 
-            trickle: false, 
+        const peer = new Peer({
+            initiator: false,
+            trickle: false,
             stream,
             config: {
                 iceServers: [
@@ -107,7 +105,6 @@ export const VideoCallProvider = ({ children }) => {
 
         peer.on('error', (err) => {
             console.error("VideoContext: Peer error (Receiver):", err);
-            toast.error("Bridge connection failed");
         });
 
         console.log("VideoContext: Signaling peer with received data...");
@@ -151,9 +148,9 @@ export const VideoCallProvider = ({ children }) => {
             console.log("VideoContext: Direct Notification sent to group members");
             groupMembers.forEach(memberId => {
                 if (memberId !== authUser?._id) {
-                    socket.emit('callUser', { 
-                        userToCall: memberId, 
-                        from: authUser?._id, 
+                    socket.emit('callUser', {
+                        userToCall: memberId,
+                        from: authUser?._id,
                         callerName: authUser?.fullName,
                         logId: logId,
                         groupName: groupName,
@@ -166,9 +163,9 @@ export const VideoCallProvider = ({ children }) => {
             return;
         }
 
-        const peer = new Peer({ 
-            initiator: true, 
-            trickle: false, 
+        const peer = new Peer({
+            initiator: true,
+            trickle: false,
             stream,
             config: {
                 iceServers: [
@@ -181,10 +178,10 @@ export const VideoCallProvider = ({ children }) => {
 
         peer.on('signal', (data) => {
             console.log("VideoContext: Initiator signaling...");
-            socket.emit('callUser', { 
-                userToCall: id, 
-                signalData: data, 
-                from: authUser._id, 
+            socket.emit('callUser', {
+                userToCall: id,
+                signalData: data,
+                from: authUser._id,
                 callerName: authUser.fullName,
                 logId: logId
             });
@@ -204,7 +201,7 @@ export const VideoCallProvider = ({ children }) => {
 
     const handleUserJoined = useCallback(async ({ userId, signal }) => {
         console.log("VideoContext: Group User Event:", userId, signal ? "SignalReceived" : "NewUserJoined");
-        
+
         // Prevent duplicate peers for the same user
         if (groupPeersRef.current.find(p => p.peerID === userId)) {
             console.log("VideoContext: Peer already exists for", userId);
@@ -291,9 +288,9 @@ export const VideoCallProvider = ({ children }) => {
 
         if (callLogId) {
             const finalStatus = callAccepted ? "completed" : "missed";
-            axios.put(`/api/messages/calls/update/${callLogId}`, { 
-                status: finalStatus, 
-                duration: callDuration 
+            axios.put(`/api/messages/calls/update/${callLogId}`, {
+                status: finalStatus,
+                duration: callDuration
             }).catch(e => console.error(e));
         }
 
@@ -329,7 +326,7 @@ export const VideoCallProvider = ({ children }) => {
             });
             setLocalStream(null);
         }
-        
+
         setRemoteStream(null);
         setCall({ isReceivingCall: false });
         setCallAccepted(false);
@@ -350,7 +347,7 @@ export const VideoCallProvider = ({ children }) => {
 
     useEffect(() => {
         if (!socket) return;
-        
+
         const handleIncomingCall = ({ from, callerName, signal, logId, groupName, groupId }) => {
             console.log("Socket: Incoming call signal received from", callerName);
             setCall({ isReceivingCall: true, from, callerName, signal, logId, groupName, groupId });
@@ -410,14 +407,14 @@ export const VideoCallProvider = ({ children }) => {
         }}>
             {children}
             {call.isReceivingCall && !callAccepted && (
-                <IncomingCall 
+                <IncomingCall
                     callerName={call.groupName ? `${call.groupName} (${call.callerName})` : call.callerName}
                     onAnswer={answerCall}
                     onReject={rejectCall}
                 />
             )}
             {showVideoModal && (
-                <VideoCall 
+                <VideoCall
                     onClose={() => setShowVideoModal(false)}
                     isGroupCall={isGroupCall}
                 />

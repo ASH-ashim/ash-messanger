@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { ChatContext } from '../../context/ChatContext';
-import toast from 'react-hot-toast';
 
 const CreateGroupModal = ({ onClose }) => {
     const { users, createGroup } = useContext(ChatContext);
@@ -8,15 +7,21 @@ const CreateGroupModal = ({ onClose }) => {
     const [selectedMembers, setSelectedMembers] = useState([]);
 
     const toggleMember = (userId) => {
-        setSelectedMembers(prev => 
+        setSelectedMembers(prev =>
             prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
         );
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (groupName.trim() === '') return toast.error("Group name is required");
-        if (selectedMembers.length === 0) return toast.error("Please select at least one member");
+        if (groupName.trim() === '') {
+            console.error("Group name is required");
+            return;
+        }
+        if (selectedMembers.length === 0) {
+            console.error("Please select at least one member");
+            return;
+        }
 
         await createGroup({
             name: groupName,
@@ -41,7 +46,7 @@ const CreateGroupModal = ({ onClose }) => {
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Group Name</label>
-                        <input 
+                        <input
                             type="text"
                             value={groupName}
                             onChange={(e) => setGroupName(e.target.value)}
@@ -54,12 +59,11 @@ const CreateGroupModal = ({ onClose }) => {
                         <label className="block text-sm font-medium text-gray-400 mb-2">Select Members ({selectedMembers.length})</label>
                         <div className="max-h-60 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                             {users.map(user => (
-                                <div 
+                                <div
                                     key={user._id}
                                     onClick={() => toggleMember(user._id)}
-                                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition ${
-                                        selectedMembers.includes(user._id) ? 'bg-violet-500/20 ring-1 ring-violet-500' : 'bg-gray-700/50 hover:bg-gray-700'
-                                    }`}
+                                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition ${selectedMembers.includes(user._id) ? 'bg-violet-500/20 ring-1 ring-violet-500' : 'bg-gray-700/50 hover:bg-gray-700'
+                                        }`}
                                 >
                                     <img src={user.profilePic || "/avatar.png"} alt="" className="w-10 h-10 rounded-full object-cover" />
                                     <span className="text-white flex-1 font-medium">{user.fullName}</span>
@@ -76,14 +80,14 @@ const CreateGroupModal = ({ onClose }) => {
                     </div>
 
                     <div className="flex gap-3 mt-8">
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onClick={onClose}
                             className="flex-1 py-3 px-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition"
                         >
                             Cancel
                         </button>
-                        <button 
+                        <button
                             type="submit"
                             className="flex-1 py-3 px-4 bg-violet-500 hover:bg-violet-600 text-white font-semibold rounded-xl shadow-lg shadow-violet-500/20 transition"
                         >
