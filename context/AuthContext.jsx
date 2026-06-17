@@ -66,7 +66,10 @@ export const AuthProvider = ({ children }) => {
         setOnlineUsers([]);
         delete axios.defaults.headers.common["Authorization"];
         console.log("Logged out successfully");
-        if (socket) socket.disconnect();
+        if (socket) {
+            socket.disconnect();
+            setSocket(null);
+        }
         navigate("/login");
     };
 
@@ -102,15 +105,34 @@ export const AuthProvider = ({ children }) => {
 
 
     const connectSocket = (userData) => {
+        if (!userData) return;
 
-        if (!userData || socket?.connected) return;
+        if (socket && socket.connected) return;
+
+        if (socket) {
+            socket.disconnect();
+            setSocket(null);
+        }
 
         const newSocket = io(backendUrl, {
+            auth: { userId: userData._id },
             query: { userId: userData._id },
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
             transports: ["websocket", "polling"], // Try websocket first, then poll
+        });
+
+        newSocket.on("connect", () => {
+            console.log("Socket connected:", newSocket.id);
+        });
+
+        newSocket.on("disconnect", (reason) => {
+            console.warn("Socket disconnected:", reason);
+        });
+
+        newSocket.on("reconnect", (attempt) => {
+            console.log("Socket reconnected after attempt:", attempt);
         });
 
         newSocket.on("connect_error", (err) => {
@@ -130,6 +152,12 @@ export const AuthProvider = ({ children }) => {
         logout();
     };
 
+
+    useEffect(() => {
+        if (authUser) {
+            connectSocket(authUser);
+        }
+    }, [authUser]);
 
     useEffect(() => {
         if (token) {
