@@ -33,16 +33,39 @@ export const VideoCallProvider = ({ children }) => {
         if (localStream) return localStream;
         if (mediaStreamPromise.current) return mediaStreamPromise.current;
 
+        mediaRequestPending.current = true;
         mediaStreamPromise.current = (async () => {
             try {
                 console.log("VideoContext: Requesting camera/mic...");
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100,
+                    }
+                });
+                const audioTracks = stream.getAudioTracks();
+                const videoTracks = stream.getVideoTracks();
+
+                if (!audioTracks || audioTracks.length === 0) {
+                    console.error("VideoContext: No audio track available from getUserMedia.");
+                    stream.getTracks().forEach(track => track.stop());
+                    mediaStreamPromise.current = null;
+                    return null;
+                }
+
+                audioTracks.forEach(track => track.enabled = true);
+                videoTracks.forEach(track => track.enabled = true);
+
                 setLocalStream(stream);
                 return stream;
             } catch (error) {
                 console.error("VideoContext: Device access error:", error);
                 mediaStreamPromise.current = null;
                 return null;
+            } finally {
+                mediaRequestPending.current = false;
             }
         })();
 
